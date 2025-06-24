@@ -4,10 +4,10 @@ import z from "zod";
 
 // Define the schema for the environment variables
 const envSchema = z.object({
-  DATABASE_URL: z.string().url(),
-  BETTER_AUTH_SECRET: z.string(),
-  BETTER_AUTH_URL: z.string(),
-  CLIENT_APP_URL: z.string().url()
+  DATABASE_URL: z.string().url().optional(),
+  NEXT_PUBLIC_BETTER_AUTH_SECRET: z.string().optional(),
+  NEXT_PUBLIC_BETTER_AUTH_URL: z.string().optional(),
+  NEXT_PUBLIC_CLIENT_APP_URL: z.string().url().optional()
 });
 
 // Function to validate the environment variables

@@ -6,7 +6,7 @@ import { env } from "@/lib/config/env";
 
 type AppType = typeof app;
 
-const client = hc<AppType>(env.CLIENT_APP_URL, {
+const client = hc<AppType>(env.NEXT_PUBLIC_CLIENT_APP_URL, {
   fetch: ((input, init) => {
     return fetch(input, {
       ...init,
