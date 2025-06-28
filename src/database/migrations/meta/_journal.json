@@ -15,6 +15,13 @@
       "when": 1750703705150,
       "tag": "0001_youthful_tenebrous",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1750790097550,
+      "tag": "0002_quiet_mentallo",
+      "breakpoints": true
     }
   ]
 }
