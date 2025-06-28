@@ -155,7 +155,10 @@ export const create: AppRouteHandler<CreateRoute> = async (c) => {
     );
   }
 
-  const [inserted] = await db.insert(media).values(body).returning();
+  const [inserted] = await db
+    .insert(media)
+    .values({ ...body, uploadedBy: session.userId })
+    .returning();
 
   if (!inserted) {
     return c.json(

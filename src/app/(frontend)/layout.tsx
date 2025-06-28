@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { fontSans, fontHeading } from "@/lib/fonts";
 import { Toaster } from "sonner";
+import { Providers } from "@/components/providers";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -18,8 +19,10 @@ export default function RootLayout({
       <body
         className={`${fontSans.variable} ${fontHeading.variable} font-sans antialiased`}
       >
-        {children}
-        <Toaster position="bottom-left" />
+        <Providers>
+          {children}
+          <Toaster position="bottom-left" />
+        </Providers>
       </body>
     </html>
   );

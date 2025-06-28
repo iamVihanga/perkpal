@@ -1,17 +1,26 @@
+"use client";
+
 import React from "react";
-import { ImagesIcon, SearchIcon, UploadIcon } from "lucide-react";
+import { ImagesIcon, UploadIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import type { ActiveTab } from "../gallery-view";
+import type { ActiveTab, onUseSelectedT } from "../gallery-view";
+import { useMediaLibraryStore } from "../../store/library-store";
 
 type Props = {
   currentTab: ActiveTab;
   setCurrentTab: React.Dispatch<React.SetStateAction<ActiveTab>>;
+  onUseSelected?: onUseSelectedT;
 };
 
-export function GalleryTabBar({ currentTab, setCurrentTab }: Props) {
+export function GalleryTabBar({
+  currentTab,
+  setCurrentTab,
+  onUseSelected
+}: Props) {
+  const { selectedFiles } = useMediaLibraryStore();
+
   return (
     <nav className="border-y border-secondary/90 flex items-center justify-between bg-transparent w-full h-12">
       <div className="flex items-center gap-3 h-full">
@@ -55,16 +64,15 @@ export function GalleryTabBar({ currentTab, setCurrentTab }: Props) {
       </div>
 
       {currentTab === "library" && (
-        <div className="flex items-center gap-2 h-full">
-          <div className="h-full w-fit flex items-center">
-            <div className="h-full w-fit px-1 flex items-center justify-center">
-              <SearchIcon className="size-4 text-primary/60" />
-            </div>
-            <Input
-              className="border-none shadow-none bg-transparent h-full focus-visible:ring-transparent"
-              placeholder="Type file name to search"
-            />
-          </div>
+        <div className="">
+          {selectedFiles.length > 0 && (
+            <Button
+              className="h-full rounded-none"
+              onClick={() => onUseSelected?.(selectedFiles)}
+            >
+              Use Selected
+            </Button>
+          )}
         </div>
       )}
     </nav>

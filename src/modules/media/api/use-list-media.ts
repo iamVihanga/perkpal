@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { client } from "@/lib/rpc";
+import { getClient } from "@/lib/rpc/client";
 import { QueryParamsSchema } from "../types";
 
 export const useListMedia = (queryParams: QueryParamsSchema) => {
   const query = useQuery({
-    queryKey: ["media"],
+    queryKey: ["media", { queryParams }],
     queryFn: async () => {
-      const rpcClient = await client();
+      const rpcClient = await getClient();
 
       const response = await rpcClient.api.media.$get({
         query: queryParams
