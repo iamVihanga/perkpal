@@ -45,17 +45,7 @@ export const auth = betterAuth({
   },
 
   socialProviders: {},
-  plugins: [
-    adminPlugin(),
-    openAPI(),
-    apiKey(),
-    organization({
-      allowUserToCreateOrganization() {
-        // TODO: In future, Allow permissions based on user's subscription
-        return true;
-      }
-    })
-  ],
+  plugins: [adminPlugin(), openAPI()],
 
   advanced: {
     crossSubDomainCookies: {

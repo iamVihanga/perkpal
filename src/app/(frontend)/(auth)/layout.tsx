@@ -15,7 +15,7 @@ export default function AuthLayout({ children }: Props) {
             <SchoolIcon className="size-4" />
           </div>
           <span className="font-heading text-primary/90 font-bold h-4 flex items-center gap-1">
-            Donext
+            CodeVille
             <Separator orientation="vertical" />
             <span className="font-normal">Org</span>
           </span>
