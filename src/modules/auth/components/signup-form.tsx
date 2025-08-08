@@ -30,6 +30,7 @@ import { cn } from "@/lib/utils";
 
 import { authClient } from "@/lib/auth-client";
 import { signupSchema, type SignupSchema } from "../schemas";
+import { PasswordInput } from "@/components/ui/password-input";
 
 interface SignupFormProps {
   type?: "agent" | "user";
@@ -122,7 +123,7 @@ export function SignupForm({
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input
+                        <PasswordInput
                           type="password"
                           placeholder="******"
                           {...field}
@@ -140,7 +141,7 @@ export function SignupForm({
                     <FormItem>
                       <FormLabel>Confirm Password</FormLabel>
                       <FormControl>
-                        <Input
+                        <PasswordInput
                           type="password"
                           placeholder="******"
                           {...field}
