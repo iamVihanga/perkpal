@@ -31,14 +31,6 @@ export const mediaUpdateSchema = createInsertSchema(media)
 
 export type MediaUpdateType = z.infer<typeof mediaUpdateSchema>;
 
-export enum MediaUploadPaths {
-  AGENTS = "agents",
-  PROFILES = "profiles",
-  PROPERTIES = "properties",
-  PROPERTY_TYPES = "property_types",
-  CITIES = "cities"
-}
-
 export interface UploadParams {
   file: File;
   type?: MediaType;
