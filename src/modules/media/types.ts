@@ -1,7 +1,7 @@
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
-import { media, mediaTypeEnum } from "@/database/schema";
+import { media, mediaTypeEnum } from "@/database/schema/media.schema";
 
 export const queryParamsSchema = z.object({
   page: z.string().optional(),
@@ -32,18 +32,14 @@ export interface UploadParams {
   type?: MediaType;
   path?: string;
 
-  seoTitle?: string | null | undefined;
-  seoDescription?: string | null | undefined;
-  seoKeywords?: string | null | undefined;
-
   onProgress: (progress: Progress) => void;
 }
 
 export const mediaUploadSchema = createInsertSchema(media).omit({
   id: true,
+  uploadedBy: true,
   createdAt: true,
-  updatedAt: true,
-  uploadedBy: true
+  updatedAt: true
 });
 
 export type MediaUploadType = z.infer<typeof mediaUploadSchema>;
@@ -52,7 +48,6 @@ export const mediaUpdateSchema = createInsertSchema(media)
   .omit({
     id: true,
     createdAt: true,
-    uploadedBy: true,
     type: true
   })
   .partial();

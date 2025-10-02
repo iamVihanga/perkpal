@@ -1,4 +1,4 @@
-import { Media } from "@/lib/zod/media.zod";
+import { Media } from "@/modules/media/types";
 import { create } from "zustand";
 
 interface MediaLibraryStore {
