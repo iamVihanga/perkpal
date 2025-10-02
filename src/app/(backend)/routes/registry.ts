@@ -1,3 +1,4 @@
+import createApp from "@/lib/server/create-app";
 import { createRouter } from "@/lib/server/create-app";
 import { AppOpenAPI } from "@/lib/types/server";
 import { BASE_API_PATH } from "@/lib/config/constants";
@@ -13,3 +14,5 @@ export function registerRoutes(app: AppOpenAPI) {
 export const router = registerRoutes(createRouter().basePath(BASE_API_PATH));
 
 export type Router = typeof router;
+
+export const app = registerRoutes(createApp());

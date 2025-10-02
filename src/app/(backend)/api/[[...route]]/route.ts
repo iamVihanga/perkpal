@@ -1,10 +1,7 @@
 import { handle } from "hono/vercel";
 
-import { registerRoutes } from "@/app/(backend)/routes/registry";
-import createApp from "@/lib/server/create-app";
+import { app } from "@/app/(backend)/routes/registry";
 import configureOpenAPI from "@/lib/server/open-api-config";
-
-export const app = registerRoutes(createApp());
 
 configureOpenAPI(app);
 
