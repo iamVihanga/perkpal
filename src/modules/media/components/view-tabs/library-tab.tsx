@@ -1,23 +1,23 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import React, { useState } from "react";
-import { useListMedia } from "../../api/use-list-media";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
+  ChevronLeft,
+  ChevronRight,
   ImagesIcon,
   Loader2,
   SortAsc,
   SortDesc,
-  XIcon,
-  ChevronLeft,
-  ChevronRight
+  XIcon
 } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import ImageGridCard from "./image-grid-card";
+import { useListMedia } from "../../api/use-list-media";
 import { useMediaLibraryStore } from "../../store/library-store";
-import { Media } from "@/lib/zod/media.zod";
+import ImageGridCard from "./image-grid-card";
+
+import { Media } from "../../types";
 
 export function LibraryTab() {
   const { sort, search, page, limit, setSort, setSearch, setPage, setLimit } =
@@ -58,12 +58,12 @@ export function LibraryTab() {
   return (
     <div className="h-full flex-1 relative flex flex-col">
       {/* Library Heading Bar */}
-      <div className="flex items-center justify-between py-2 bg-secondary/60">
+      <div className="flex items-center justify-between py-2 px-3 bg-secondary/40">
         <div className="">
           {isLoading ? (
             <Button
               variant={"ghost"}
-              icon={<Loader2 className="text-primary animate-spin" />}
+              icon={<Loader2 className="text-primary animate-spin " />}
               className="text-muted-foreground"
             >{`Loading your media library...`}</Button>
           ) : data?.meta ? (
@@ -81,10 +81,12 @@ export function LibraryTab() {
           <Input
             type="text"
             placeholder="Search..."
+            className="h-9"
             onChange={(e) => setSearch(e.target.value)}
           />
           <Button
             variant="outline"
+            className="h-9"
             size="icon"
             onClick={() => setSort(sort === "asc" ? "desc" : "asc")}
           >
@@ -94,7 +96,7 @@ export function LibraryTab() {
       </div>
 
       {/* Image Grid */}
-      <div className="flex-1 p-4">
+      <div className="flex-1 py-4">
         {isLoading ? (
           <div className="flex items-center justify-center h-64">
             <Loader2 className="size-8 animate-spin text-primary" />

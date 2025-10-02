@@ -1,5 +1,4 @@
 "use client";
-import React, { useCallback } from "react";
 import { IconSlideshow } from "@tabler/icons-react";
 import {
   CheckCircle2,
@@ -10,14 +9,15 @@ import {
   XIcon
 } from "lucide-react";
 import Image from "next/image";
+import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-import { ActiveTab } from "../gallery-view";
 import { useMediaStore, type MediaFile } from "../../store";
+import { ActiveTab } from "../gallery-view";
 
 type Props = {
   currentTab: ActiveTab;
@@ -26,7 +26,7 @@ type Props = {
 
 const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
 
-export default function UploadTab({}: Props) {
+export default function UploadTab({ setCurrentTab }: Props) {
   const {
     isUploading,
     selectedFiles,
@@ -45,7 +45,10 @@ export default function UploadTab({}: Props) {
     onDrop,
     maxSize: MAX_SIZE,
     multiple: true,
-    disabled: isUploading
+    disabled: isUploading,
+    onDragEnter: undefined,
+    onDragOver: undefined,
+    onDragLeave: undefined
   });
 
   const handleDelete = (e: React.MouseEvent, file: MediaFile) => {
@@ -55,8 +58,9 @@ export default function UploadTab({}: Props) {
   };
 
   // When ready to upload
-  const handleUpload = () => {
-    uploadAllFiles();
+  const handleUpload = async () => {
+    await uploadAllFiles();
+    setCurrentTab("library");
   };
 
   return (
@@ -64,13 +68,16 @@ export default function UploadTab({}: Props) {
       {/* Upload Dropzone */}
       {selectedFiles.length < 1 && (
         <div
-          className={`w-full h-[340px] rounded-sm bg-zinc-100 hover:bg-primary/10 transition-all duration-200 hover:border-1 border-dashed hover:border-primary/50 flex items-center justify-center flex-col hover:cursor-pointer ${
+          className={`w-full h-[340px] rounded-sm bg-secondary/50 hover:bg-primary/10 transition-all duration-200 hover:border-1 border-dashed hover:border-primary/50 flex items-center justify-center flex-col hover:cursor-pointer ${
             isDragActive ? "border-primary border-[1.5px]" : ""
           } ${isUploading ? "opacity-50 cursor-not-allowed" : ""}`}
           {...getRootProps()}
         >
           <input {...getInputProps()} disabled={isUploading} />
-          <IconSlideshow className="size-16 text-primary mb-2" />
+          <IconSlideshow
+            className="size-16 text-primary mb-2"
+            strokeWidth={1}
+          />
 
           <div className="mt-3 text-center space-y-2">
             <h3 className="text-lg font-semibold text-primary">

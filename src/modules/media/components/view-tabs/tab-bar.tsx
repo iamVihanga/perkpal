@@ -1,12 +1,12 @@
 "use client";
 
-import React from "react";
 import { ImagesIcon, UploadIcon } from "lucide-react";
+import React from "react";
 
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { ActiveTab, onUseSelectedT } from "../gallery-view";
+import { Button } from "@/components/ui/button";
 import { useMediaLibraryStore } from "../../store/library-store";
+import type { ActiveTab, onUseSelectedT } from "../gallery-view";
 
 type Props = {
   currentTab: ActiveTab;
@@ -19,7 +19,7 @@ export function GalleryTabBar({
   setCurrentTab,
   onUseSelected
 }: Props) {
-  const { selectedFiles } = useMediaLibraryStore();
+  const { selectedFiles, setSelectedFiles } = useMediaLibraryStore();
 
   return (
     <nav className="border-y border-secondary/90 flex items-center justify-between bg-transparent w-full h-12">
@@ -66,12 +66,24 @@ export function GalleryTabBar({
       {currentTab === "library" && (
         <div className="">
           {selectedFiles.length > 0 && (
-            <Button
-              className="h-full rounded-none"
-              onClick={() => onUseSelected?.(selectedFiles)}
-            >
-              Use Selected
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant={"outline"}
+                className="h-full rounded-none"
+                onClick={() => {
+                  setSelectedFiles([]);
+                  onUseSelected?.([]);
+                }}
+              >
+                Clear Selection
+              </Button>
+              <Button
+                className="h-full rounded-none"
+                onClick={() => onUseSelected?.(selectedFiles)}
+              >
+                Use Selected
+              </Button>
+            </div>
           )}
         </div>
       )}

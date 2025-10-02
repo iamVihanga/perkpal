@@ -1,8 +1,8 @@
-import React from "react";
-import Image from "next/image";
-import { useMediaLibraryStore } from "../../store/library-store";
-import { Media } from "@/lib/zod/media.zod";
 import { CheckIcon } from "lucide-react";
+import Image from "next/image";
+
+import { useMediaLibraryStore } from "../../store/library-store";
+import { Media } from "../../types";
 
 export default function ImageGridCard({ media }: { media: Media }) {
   const { id, url, filename, type } = media;
@@ -25,10 +25,13 @@ export default function ImageGridCard({ media }: { media: Media }) {
       }`}
     >
       {/* Select Button on hover and selected state */}
-      <div className="absolute top-2 left-2">
+      <div className="absolute top-2 left-2 gap-3 flex flex-col">
         {isSelected ? (
           <div className="flex size-6 rounded-full bg-primary items-center justify-center">
-            <CheckIcon className="text-white size-3" />
+            <CheckIcon
+              className="text-primary-foreground size-3"
+              strokeWidth={2}
+            />
           </div>
         ) : (
           <div className="group-hover:flex hidden size-6 rounded-full border border-primary" />

@@ -1,8 +1,8 @@
 import { create } from "zustand";
 
-import type { Progress } from "../types";
-import { MediaService } from "../service";
 import { toast } from "sonner";
+import { MediaService } from "../service";
+import { MediaUploadPaths, type Progress } from "../types";
 
 export interface MediaFile {
   id: string;
@@ -189,7 +189,7 @@ export const useMediaStore = create<MediaStore>((set, get) => ({
 
         const uploadResult = await mediaService.uploadFile({
           file: file.file,
-          path: "/gallery",
+          path: MediaUploadPaths.GALLERY,
           onProgress(progress) {
             updateUploadProgress(file.id, progress);
           }

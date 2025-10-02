@@ -31,9 +31,6 @@ export class MediaService {
   async uploadFile({
     file,
     path = "",
-    seoDescription,
-    seoKeywords,
-    seoTitle,
     onProgress
   }: UploadParams): Promise<Media> {
     // Step 1: Upload file to S3
@@ -76,13 +73,13 @@ export class MediaService {
 
       // Step 2: Create media file metadata
       const mediaData: MediaUploadType = {
-        url: `${s3Config.baseUrl}${result.Key}`,
+        url: `${s3Config.baseUrl}/${result.Key}`,
         type: getMediaType(file.type),
         filename: filename,
         size: file.size,
-        seoTitle: seoTitle || null,
-        seoDescription: seoDescription || null,
-        seoKeywords: seoKeywords || null
+        seoTitle: "",
+        seoDescription: "",
+        seoKeywords: ""
       };
 
       // Step 3: Save media metadata to database via API

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
+import { QueryParamsSchema } from "../types";
 
 import { getClient } from "@/lib/rpc/client";
-import { QueryParamsSchema } from "../types";
 
 export const useListMedia = (queryParams: QueryParamsSchema) => {
   const query = useQuery({
