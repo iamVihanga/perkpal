@@ -1,17 +1,22 @@
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
-import { media, mediaTypeEnum } from "@/database/schema";
-
-export const mediaTypeSchema = createSelectSchema(mediaTypeEnum);
-
-export type MediaType = z.infer<typeof mediaTypeSchema>;
-
-export const mediaSchema = createSelectSchema(media);
+export const mediaSchema = z.object({
+  id: z.string(),
+  url: z.string().nullable(),
+  publicId: z.string().nullable(),
+  filename: z.string(),
+  size: z.number(),
+  seoTitle: z.string().nullable(),
+  seoDescription: z.string().nullable(),
+  seoKeywords: z.string().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date().nullable(),
+  uploadedBy: z.string().nullable()
+});
 
 export type Media = z.infer<typeof mediaSchema>;
 
-export const mediaUploadSchema = createInsertSchema(media).omit({
+export const mediaUploadSchema = mediaSchema.omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -20,12 +25,11 @@ export const mediaUploadSchema = createInsertSchema(media).omit({
 
 export type MediaUploadType = z.infer<typeof mediaUploadSchema>;
 
-export const mediaUpdateSchema = createInsertSchema(media)
+export const mediaUpdateSchema = mediaSchema
   .omit({
     id: true,
     createdAt: true,
-    uploadedBy: true,
-    type: true
+    uploadedBy: true
   })
   .partial();
 
@@ -33,7 +37,6 @@ export type MediaUpdateType = z.infer<typeof mediaUpdateSchema>;
 
 export interface UploadParams {
   file: File;
-  type?: MediaType;
   path?: string;
 
   seoTitle?: string | null | undefined;

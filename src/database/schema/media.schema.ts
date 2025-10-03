@@ -1,23 +1,16 @@
 import { sql } from "drizzle-orm";
-import { integer, pgEnum, pgTable, text } from "drizzle-orm/pg-core";
+import { integer, pgTable, text } from "drizzle-orm/pg-core";
 import { timestamps } from "@/lib/helpers";
 import { user } from "./auth.schema";
-
-export const mediaTypeEnum = pgEnum("media_type", [
-  "image",
-  "video",
-  "audio",
-  "document"
-]);
 
 export const media = pgTable("media", {
   id: text("id")
     .primaryKey()
     .default(sql`gen_random_uuid()`),
-  url: text("url").notNull(),
-  type: mediaTypeEnum("type").notNull(),
+  url: text("url"),
+  publicId: text("public_id"),
   filename: text("filename").notNull(),
-  size: integer("size").notNull(),
+  size: integer("size").notNull().default(0),
 
   // SEO fields
   seoTitle: text("seo_title").default(""),
