@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { fontSans, fontHeading } from "@/lib/fonts";
+import { fontSans, fontHeading, fontPalo } from "@/lib/fonts";
 import { Toaster } from "sonner";
 import { Providers } from "@/components/providers";
 
@@ -17,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${fontSans.variable} ${fontHeading.variable} font-sans antialiased`}
+        className={`${fontSans.variable} ${fontHeading.variable} ${fontPalo.variable} font-sans antialiased`}
       >
         <Providers>
           {children}

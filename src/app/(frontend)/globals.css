@@ -39,6 +39,7 @@
 
   --font-sans: var(--font-sans);
   --font-heading: var(--font-heading);
+  --font-palo: var(--font-palo);
 
   --radius: 0.5rem;
 
@@ -100,6 +101,7 @@
 
   --font-sans: var(--font-sans);
   --font-heading: var(--font-heading);
+  --font-palo: var(--font-palo);
 
   --radius: 0.5rem;
   --shadow-x: 0;
@@ -158,6 +160,7 @@
 
   --font-sans: var(--font-sans);
   --font-heading: var(--font-heading);
+  --font-palo: var(--font-palo);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
