@@ -3,8 +3,8 @@
 import { CheckIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useId } from "react";
-import { CiFacebook } from "react-icons/ci";
+import { useEffect, useId } from "react";
+// import { CiFacebook } from "react-icons/ci";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,6 +31,7 @@ import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
 import { signupSchema, type SignupSchema } from "../schemas";
 import { PasswordInput } from "@/components/ui/password-input";
+import { useQueryState } from "nuqs";
 
 export function SignupForm({
   className,
@@ -38,6 +39,13 @@ export function SignupForm({
 }: React.ComponentProps<"div">) {
   const toastId = useId();
   const router = useRouter();
+  const [signupAs, setSignupAs] = useQueryState("as");
+
+  useEffect(() => {
+    if (!signupAs && signupAs !== "content-editor") {
+      setSignupAs("user");
+    }
+  }, [signupAs, setSignupAs]);
 
   const form = useForm<SignupSchema>({
     resolver: zodResolver(signupSchema),
@@ -52,11 +60,22 @@ export function SignupForm({
     try {
       toast.loading("Registering new user...", { id: toastId });
 
-      const result = await authClient.signUp.email({
-        email: values.email,
-        password: values.password,
-        name: ""
-      });
+      const result = await authClient.signUp.email(
+        {
+          email: values.email,
+          password: values.password,
+          name: ""
+        },
+        {
+          onSuccess: async () => {
+            if (signupAs === "content-editor") {
+              toast.loading("Setting up editor profile...", { id: toastId });
+
+              // TODO: send request to update user role, manually
+            }
+          }
+        }
+      );
 
       if (result?.error) {
         throw new Error(result.error.message);
@@ -85,7 +104,7 @@ export function SignupForm({
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSignup)}>
               <div className="grid gap-6">
-                <div className="flex flex-col gap-4">
+                {/* <div className="flex flex-col gap-4">
                   <Button variant="outline" className="w-full">
                     <CiFacebook className="size-5" />
                     Signup with Facebook
@@ -95,7 +114,7 @@ export function SignupForm({
                   <span className="bg-card text-muted-foreground relative z-10 px-2">
                     Or continue with
                   </span>
-                </div>
+                </div> */}
 
                 <FormField
                   control={form.control}
@@ -118,11 +137,7 @@ export function SignupForm({
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <PasswordInput
-                          type="password"
-                          placeholder="******"
-                          {...field}
-                        />
+                        <PasswordInput placeholder="******" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -136,11 +151,7 @@ export function SignupForm({
                     <FormItem>
                       <FormLabel>Confirm Password</FormLabel>
                       <FormControl>
-                        <PasswordInput
-                          type="password"
-                          placeholder="******"
-                          {...field}
-                        />
+                        <PasswordInput placeholder="******" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

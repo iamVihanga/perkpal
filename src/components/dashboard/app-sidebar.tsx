@@ -1,14 +1,16 @@
 "use client";
 
+import * as React from "react";
 import {
   IconDashboard,
   IconSettings,
-  IconPercentage,
   IconGift,
-  IconFolder,
-  IconBrowser
+  IconBrowser,
+  IconNews,
+  IconUsersGroup,
+  IconLink,
+  IconUserCog
 } from "@tabler/icons-react";
-import * as React from "react";
 
 import { NavMain } from "@/components/dashboard/nav-main";
 import { NavSecondary } from "@/components/dashboard/nav-secondary";
@@ -38,56 +40,73 @@ const data = {
       icon: IconDashboard
     },
     {
-      title: "Deals",
-      url: "/dashboard/deals",
-      icon: IconPercentage
+      title: "Journal",
+      url: "/dashboard/journals",
+      icon: IconNews,
+      items: [
+        { title: "All Posts", url: "/dashboard/journals" },
+        { title: "Add New Post", url: "/dashboard/journals/new" },
+        { title: "Tags", url: "/dashboard/journals/tags" }
+      ]
     },
     {
-      title: "Perks",
+      title: "Deals & Perks",
       url: "/dashboard/perks",
-      icon: IconGift
+      icon: IconGift,
+      items: [
+        { title: "All Perks", url: "/dashboard/perks" },
+        { title: "Create Perk", url: "/dashboard/perks/new" },
+        { title: "Categories", url: "/dashboard/perks/categories" },
+        { title: "Sub Categories", url: "/dashboard/perks/subcategories" }
+      ]
     },
     {
-      title: "Categories",
-      url: "/dashboard/categories",
-      icon: IconFolder
+      title: "All Leads",
+      url: "/dashboard/leads",
+      icon: IconUsersGroup
     },
     {
-      title: "Subcategories",
-      url: "/dashboard/subcategories",
-      icon: IconFolder
+      title: "Partner Requests",
+      url: "/dashboard/partner-requests",
+      icon: IconLink
     }
   ],
   navFrontend: [
     {
-      title: "Homepage",
-      url: "/dashboard/site-settings/homepage",
-      icon: IconBrowser
+      title: "Pages",
+      url: "/dashboard/site-settings",
+      icon: IconBrowser,
+      items: [
+        {
+          title: "Homepage",
+          url: "/dashboard/site-settings/homepage"
+        },
+        {
+          title: "About Us",
+          url: "/dashboard/site-settings/about-us"
+        },
+        {
+          title: "Partner with Us",
+          url: "/dashboard/site-settings/partner-with-us"
+        },
+        {
+          title: "ToS/Privacy",
+          url: "/dashboard/site-settings/tos-privacy"
+        },
+        {
+          title: "Contact",
+          url: "/dashboard/site-settings/contact"
+        },
+        {
+          title: "Journal",
+          url: "/dashboard/site-settings/journal"
+        }
+      ]
     },
     {
-      title: "About Us",
-      url: "/dashboard/site-settings/about-us",
-      icon: IconBrowser
-    },
-    {
-      title: "Partner with Us",
-      url: "/dashboard/site-settings/partner-with-us",
-      icon: IconBrowser
-    },
-    {
-      title: "ToS/Privacy",
-      url: "/dashboard/site-settings/tos-privacy",
-      icon: IconBrowser
-    },
-    {
-      title: "Contact",
-      url: "/dashboard/site-settings/contact",
-      icon: IconBrowser
-    },
-    {
-      title: "Journal",
-      url: "/dashboard/site-settings/journal",
-      icon: IconBrowser
+      title: "User Management",
+      icon: IconUserCog,
+      url: "/dashboard/user-management"
     }
   ],
   navSecondary: [
@@ -96,16 +115,6 @@ const data = {
       url: "/dashboard/settings",
       icon: IconSettings
     }
-    // {
-    //   title: "Get Help",
-    //   url: "#",
-    //   icon: IconHelp
-    // },
-    // {
-    //   title: "Search",
-    //   url: "#",
-    //   icon: IconSearch
-    // }
   ]
 };
 

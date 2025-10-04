@@ -4,7 +4,7 @@ import { CheckIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useId } from "react";
-import { CiFacebook } from "react-icons/ci";
+// import { CiFacebook } from "react-icons/ci";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,6 +26,7 @@ import {
   CardTitle
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { cn } from "@/lib/utils";
 
 import { authClient } from "@/lib/auth-client";
@@ -82,7 +83,7 @@ export function SigninForm({
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSignin)}>
               <div className="grid gap-6">
-                <div className="flex flex-col gap-4">
+                {/* <div className="flex flex-col gap-4">
                   <Button variant="outline" className="w-full">
                     <CiFacebook className="size-5" />
                     Signin with Facebook
@@ -92,7 +93,7 @@ export function SigninForm({
                   <span className="bg-card text-muted-foreground relative z-10 px-2">
                     Or continue with
                   </span>
-                </div>
+                </div> */}
 
                 <FormField
                   control={form.control}
@@ -123,11 +124,7 @@ export function SigninForm({
                         </Link>
                       </div>
                       <FormControl>
-                        <Input
-                          type="password"
-                          placeholder="******"
-                          {...field}
-                        />
+                        <PasswordInput placeholder="******" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

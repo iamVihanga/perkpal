@@ -1,6 +1,7 @@
 "use client";
 
 import { type Icon } from "@tabler/icons-react";
+import { ChevronDown } from "lucide-react";
 
 import {
   SidebarGroup,
@@ -8,8 +9,16 @@ import {
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton
 } from "../ui/sidebar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger
+} from "../ui/collapsible";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
@@ -21,6 +30,10 @@ export function NavAdmin({
     title: string;
     url: string;
     icon?: Icon;
+    items?: {
+      title: string;
+      url: string;
+    }[];
   }[];
 }) {
   const pathname = usePathname();
@@ -48,6 +61,17 @@ export function NavAdmin({
     }
   };
 
+  const isItemActive = (item: (typeof items)[0]): boolean => {
+    if (item.items) {
+      // Check if any sub-item is active
+      return (
+        item.items.some((subItem) => isActive(subItem.url)) ||
+        isActive(item.url)
+      );
+    }
+    return isActive(item.url);
+  };
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Frontend</SidebarGroupLabel>
@@ -56,16 +80,50 @@ export function NavAdmin({
         <SidebarMenu className="space-y-1">
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                asChild
-                tooltip={item.title}
-                variant={isActive(item.url) ? "active" : "secondary"}
-              >
-                <Link href={item.url}>
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
+              {item.items ? (
+                <Collapsible
+                  defaultOpen={isItemActive(item)}
+                  className="group/collapsible"
+                >
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton
+                      tooltip={item.title}
+                      variant={isItemActive(item) ? "active" : "secondary"}
+                    >
+                      {item.icon && <item.icon />}
+                      <span>{item.title}</span>
+                      <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      {item.items.map((subItem) => (
+                        <SidebarMenuSubItem key={subItem.title}>
+                          <SidebarMenuSubButton
+                            asChild
+                            isActive={isActive(subItem.url)}
+                          >
+                            <Link href={subItem.url}>
+                              <span>{subItem.title}</span>
+                            </Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </Collapsible>
+              ) : (
+                <SidebarMenuButton
+                  asChild
+                  tooltip={item.title}
+                  variant={isActive(item.url) ? "active" : "secondary"}
+                >
+                  <Link href={item.url}>
+                    {item.icon && <item.icon />}
+                    <span>{item.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              )}
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
