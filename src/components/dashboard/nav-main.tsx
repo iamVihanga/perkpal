@@ -1,11 +1,12 @@
 "use client";
 
-import { IconMail, type Icon, IconLogout } from "@tabler/icons-react";
+import { type Icon, IconLogout } from "@tabler/icons-react";
 
 import { Button } from "../ui/button";
 import {
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem
@@ -15,7 +16,7 @@ import { useId, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
-import { Loader } from "lucide-react";
+import { GiftIcon, Loader } from "lucide-react";
 
 export function NavMain({
   items
@@ -74,9 +75,9 @@ export function NavMain({
               tooltip="Quick Create"
               className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
             >
-              <Link href="/dashboard/inquiries">
-                <IconMail />
-                <span>View Inquiries</span>
+              <Link href="/dashboard/perks/new">
+                <GiftIcon />
+                <span>Quick Perk</span>
               </Link>
             </SidebarMenuButton>
             <Button
@@ -94,6 +95,9 @@ export function NavMain({
             </Button>
           </SidebarMenuItem>
         </SidebarMenu>
+
+        <SidebarGroupLabel>Content Management</SidebarGroupLabel>
+
         <SidebarMenu className="space-y-1">
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>

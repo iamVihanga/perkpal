@@ -13,9 +13,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <Suspense>
       <NextThemesProvider
         attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
+        defaultTheme="light"
+        // disableTransitionOnChange
         enableColorScheme
       >
         <QueryClientProvider client={queryClient}>

@@ -26,7 +26,10 @@ export default async function Home() {
             <>
               <SignoutButton className="bg-transparent text-amber-100" />
 
-              <Button variant={"outline"} asChild>
+              <Button
+                asChild
+                className="bg-amber-100 hover:bg-amber-50 text-green-900 hover:text-green-900"
+              >
                 <Link href="/dashboard">
                   {session.user.role === "admin" && "Admin"} Dashboard
                 </Link>

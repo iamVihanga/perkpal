@@ -2,15 +2,11 @@
 
 import {
   IconDashboard,
-  // IconHelp,
-  // IconSearch,
   IconSettings,
-  IconList,
-  IconMilitaryAward,
-  IconRosette,
-  IconBuildings,
-  IconPennant,
-  IconBooks
+  IconPercentage,
+  IconGift,
+  IconFolder,
+  IconBrowser
 } from "@tabler/icons-react";
 import * as React from "react";
 
@@ -27,6 +23,7 @@ import {
   SidebarMenuItem
 } from "../ui/sidebar";
 import { PiBuilding } from "react-icons/pi";
+import { NavAdmin } from "./nav-admin";
 
 const data = {
   user: {
@@ -41,34 +38,56 @@ const data = {
       icon: IconDashboard
     },
     {
-      title: "Basic Details",
-      url: "/dashboard/basic-details",
-      icon: IconList
+      title: "Deals",
+      url: "/dashboard/deals",
+      icon: IconPercentage
     },
     {
-      title: "Core Qualifications",
-      url: "/dashboard/core-qualifications",
-      icon: IconRosette
+      title: "Perks",
+      url: "/dashboard/perks",
+      icon: IconGift
     },
     {
-      title: "Education",
-      url: "/dashboard/education",
-      icon: IconBooks
+      title: "Categories",
+      url: "/dashboard/categories",
+      icon: IconFolder
     },
     {
-      title: "Accomplishments",
-      url: "/dashboard/accomplishments",
-      icon: IconMilitaryAward
+      title: "Subcategories",
+      url: "/dashboard/subcategories",
+      icon: IconFolder
+    }
+  ],
+  navFrontend: [
+    {
+      title: "Homepage",
+      url: "/dashboard/site-settings/homepage",
+      icon: IconBrowser
     },
     {
-      title: "Projects",
-      url: "/dashboard/projects",
-      icon: IconBuildings
+      title: "About Us",
+      url: "/dashboard/site-settings/about-us",
+      icon: IconBrowser
     },
     {
-      title: "Experiences",
-      url: "/dashboard/experiences",
-      icon: IconPennant
+      title: "Partner with Us",
+      url: "/dashboard/site-settings/partner-with-us",
+      icon: IconBrowser
+    },
+    {
+      title: "ToS/Privacy",
+      url: "/dashboard/site-settings/tos-privacy",
+      icon: IconBrowser
+    },
+    {
+      title: "Contact",
+      url: "/dashboard/site-settings/contact",
+      icon: IconBrowser
+    },
+    {
+      title: "Journal",
+      url: "/dashboard/site-settings/journal",
+      icon: IconBrowser
     }
   ],
   navSecondary: [
@@ -105,8 +124,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <PiBuilding className="size-4" />
                 </div>
 
-                <span className="text-base font-semibold font-heading">
-                  {`Hansie Daniel`}
+                <span className="text-base font-palo font-bold">
+                  {`PerkPal.`}
                 </span>
               </div>
             </SidebarMenuButton>
@@ -115,10 +134,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
+        <NavAdmin items={data.navFrontend} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   );
