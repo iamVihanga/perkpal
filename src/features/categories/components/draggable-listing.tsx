@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { DraggableDataTable } from "@/components/table/draggable-data-table";
@@ -45,8 +46,8 @@ export default function DraggableCategoryTable() {
 
   return (
     <DraggableDataTable
-      columns={columns}
-      data={data.data}
+      columns={columns as any}
+      data={data.data as any}
       totalItems={data.meta.totalCount}
       onReorder={handleReorder}
       getItemId={getItemId}

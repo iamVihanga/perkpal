@@ -37,6 +37,7 @@ import {
   closestCenter,
   KeyboardSensor,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   DragEndEvent
@@ -53,9 +54,14 @@ import { CSS } from "@dnd-kit/utilities";
 interface DraggableRowProps<TData> {
   row: Row<TData>;
   children: React.ReactNode;
+  itemId: string;
 }
 
-function DraggableRow<TData>({ row, children }: DraggableRowProps<TData>) {
+function DraggableRow<TData>({
+  row,
+  children,
+  itemId
+}: DraggableRowProps<TData>) {
   const {
     attributes,
     listeners,
@@ -64,7 +70,7 @@ function DraggableRow<TData>({ row, children }: DraggableRowProps<TData>) {
     transition,
     isDragging
   } = useSortable({
-    id: row.id
+    id: itemId
   });
 
   const style = {
@@ -128,7 +134,17 @@ export function DraggableDataTable<TData, TValue>({
   const [items, setItems] = React.useState<TData[]>(data);
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8
+      }
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 8
+      }
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates
     })
@@ -215,12 +231,12 @@ export function DraggableDataTable<TData, TValue>({
           </div>
         )}
         <div className="absolute bottom-0 left-0 right-0 top-0 flex overflow-scroll rounded-md border md:overflow-auto">
-          <ScrollArea className="flex-1">
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
-            >
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <ScrollArea className="flex-1">
               <Table className="relative">
                 <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
@@ -244,21 +260,24 @@ export function DraggableDataTable<TData, TValue>({
                     strategy={verticalListSortingStrategy}
                   >
                     {table.getRowModel().rows?.length ? (
-                      table.getRowModel().rows.map((row) => (
-                        <DraggableRow key={row.id} row={row}>
-                          {row
-                            .getVisibleCells()
-                            .slice(1)
-                            .map((cell) => (
-                              <TableCell key={cell.id}>
-                                {flexRender(
-                                  cell.column.columnDef.cell,
-                                  cell.getContext()
-                                )}
-                              </TableCell>
-                            ))}
-                        </DraggableRow>
-                      ))
+                      table.getRowModel().rows.map((row) => {
+                        const itemId = getItemId(row.original);
+                        return (
+                          <DraggableRow key={itemId} row={row} itemId={itemId}>
+                            {row
+                              .getVisibleCells()
+                              .slice(1)
+                              .map((cell) => (
+                                <TableCell key={cell.id}>
+                                  {flexRender(
+                                    cell.column.columnDef.cell,
+                                    cell.getContext()
+                                  )}
+                                </TableCell>
+                              ))}
+                          </DraggableRow>
+                        );
+                      })
                     ) : (
                       <TableRow>
                         <TableCell
@@ -272,9 +291,9 @@ export function DraggableDataTable<TData, TValue>({
                   </SortableContext>
                 </TableBody>
               </Table>
-            </DndContext>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          </DndContext>
         </div>
       </div>
 
