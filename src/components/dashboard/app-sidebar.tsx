@@ -56,8 +56,8 @@ const data = {
       items: [
         { title: "All Perks", url: "/dashboard/perks" },
         { title: "Create Perk", url: "/dashboard/perks/new" },
-        { title: "Categories", url: "/dashboard/perks/categories" },
-        { title: "Sub Categories", url: "/dashboard/perks/subcategories" }
+        { title: "Categories", url: "/dashboard/categories" },
+        { title: "Sub Categories", url: "/dashboard/subcategories" }
       ]
     },
     {
