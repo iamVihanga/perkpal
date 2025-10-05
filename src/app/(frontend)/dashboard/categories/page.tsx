@@ -5,7 +5,7 @@ import PageContainer from "@/modules/layouts/page-container";
 import { AppPageShell } from "@/modules/layouts/page-shell";
 
 import { CategoryTableActions } from "@/features/categories/components/categories-table/category-table-actions";
-import CategoriesTable from "@/features/categories/components/listing";
+import DraggableCategoryTable from "@/features/categories/components/draggable-listing";
 
 export default function DashboardCategoriesPage() {
   return (
@@ -13,7 +13,7 @@ export default function DashboardCategoriesPage() {
       <div className="flex flex-1 flex-col space-y-4">
         <AppPageShell
           title="All Categories"
-          description="Manage perk categories here"
+          description="Manage perk categories with drag & drop reordering"
           actionComponent={<></>}
         />
 
@@ -21,7 +21,7 @@ export default function DashboardCategoriesPage() {
 
         <CategoryTableActions />
 
-        <CategoriesTable />
+        <DraggableCategoryTable />
       </div>
     </PageContainer>
   );
