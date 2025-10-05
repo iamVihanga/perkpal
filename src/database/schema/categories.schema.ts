@@ -39,8 +39,8 @@ export const categories = pgTable(
     index("categories_name_idx").on(t.name),
     index("categories_id_idx").on(t.id),
 
-    // Ensure display order is positive
-    check("categories_display_order_check", sql`${t.displayOrder} > 0`)
+    // Ensure display order is non-negative
+    check("categories_display_order_check", sql`${t.displayOrder} >= 0`)
   ]
 );
 
@@ -78,17 +78,25 @@ export const subcategories = pgTable(
     index("subcategories_display_order_idx").on(t.displayOrder),
     index("subcategories_name_idx").on(t.name),
 
-    // Ensure display order is positive
-    check("categories_display_order_check", sql`${t.displayOrder} > 0`)
+    // Ensure display order is non-negative
+    check("subcategories_display_order_check", sql`${t.displayOrder} >= 0`)
   ]
 );
 
 // Relationships
-export const categoriesRelations = relations(categories, ({ many }) => ({
+export const categoriesRelations = relations(categories, ({ many, one }) => ({
+  ogImage: one(media, {
+    fields: [categories.og_image_id],
+    references: [media.id]
+  }),
   subcategories: many(subcategories)
 }));
 
 export const subcategoriesRelations = relations(subcategories, ({ one }) => ({
+  ogImage: one(media, {
+    fields: [subcategories.og_image_id],
+    references: [media.id]
+  }),
   category: one(categories, {
     fields: [subcategories.categoryId],
     references: [categories.id]

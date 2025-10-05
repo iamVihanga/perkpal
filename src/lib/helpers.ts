@@ -1,6 +1,8 @@
 import { sql } from "drizzle-orm";
 import { timestamp } from "drizzle-orm/pg-core";
 
+import { z } from "zod";
+
 // ---------- Database Helpers ----------
 export const timestamps = {
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -27,3 +29,13 @@ export function toKebabCase(str: string) {
       .replace(/-+/g, "-")
   );
 }
+
+// --------- Reorder Schema -----------
+export const reorderItemsSchema = z.object({
+  items: z.array(
+    z.object({
+      id: z.string(),
+      displayOrder: z.number().int().min(0)
+    })
+  )
+});
