@@ -84,11 +84,19 @@ export const subcategories = pgTable(
 );
 
 // Relationships
-export const categoriesRelations = relations(categories, ({ many }) => ({
+export const categoriesRelations = relations(categories, ({ many, one }) => ({
+  ogImage: one(media, {
+    fields: [categories.og_image_id],
+    references: [media.id]
+  }),
   subcategories: many(subcategories)
 }));
 
 export const subcategoriesRelations = relations(subcategories, ({ one }) => ({
+  ogImage: one(media, {
+    fields: [subcategories.og_image_id],
+    references: [media.id]
+  }),
   category: one(categories, {
     fields: [subcategories.categoryId],
     references: [categories.id]
