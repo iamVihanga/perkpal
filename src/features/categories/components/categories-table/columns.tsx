@@ -1,0 +1,136 @@
+"use client";
+import Link from "next/link";
+
+import { ColumnDef } from "@tanstack/react-table";
+import { ImageIcon, MoreHorizontal } from "lucide-react";
+import Image from "next/image";
+
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+
+import { SelectCategoryT } from "@/lib/zod/categories.zod";
+
+// This type is used to define the shape of our data.
+export type Category = Omit<SelectCategoryT, "createdAt"> & {
+  createdAt: string;
+  updatedAt: string | null;
+};
+
+export const columns: ColumnDef<Category>[] = [
+  {
+    accessorKey: "name",
+    header: "Name",
+    cell: ({ row }) => {
+      const name = row.getValue("name") as string;
+      const thumbnailUrl = row.original.opengraphImage?.url;
+
+      return (
+        <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center size-8 overflow-hidden">
+            {thumbnailUrl ? (
+              <Image
+                src={thumbnailUrl}
+                alt="Thumbnail"
+                width={64}
+                height={64}
+                className="rounded-md object-cover w-full h-full"
+              />
+            ) : (
+              <div className="w-full h-full bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground">
+                <ImageIcon className="size-4" />
+              </div>
+            )}
+          </div>
+
+          <div className="font-medium">{name}</div>
+        </div>
+      );
+    }
+  },
+  {
+    accessorKey: "description",
+    header: "Description",
+    cell: ({ row }) => {
+      const description = row.getValue("description") as string;
+
+      return (
+        <div className="text-muted-foreground max-w-[300px] truncate">
+          {description ? (
+            <div
+              dangerouslySetInnerHTML={{
+                __html:
+                  description.replace(/<[^>]*>/g, "").substring(0, 100) + "..."
+              }}
+            />
+          ) : (
+            "No description"
+          )}
+        </div>
+      );
+    }
+  },
+  {
+    accessorKey: "subcategories",
+    header: "Subcategories",
+    cell: ({ row }) => {
+      const subcategories = row.original.subcategories || [];
+      return (
+        <div className="text-muted-foreground">
+          {subcategories.length} Subcategor
+          {subcategories.length !== 1 ? "ies" : "y"}
+        </div>
+      );
+    }
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Created At",
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("createdAt"));
+      return (
+        <div className="text-muted-foreground">{date.toLocaleDateString()}</div>
+      );
+    }
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    cell: ({ row }) => {
+      const category = row.original;
+
+      return (
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+
+            <DropdownMenuItem asChild>
+              <Link href={`#`}>{category.name}</Link>
+            </DropdownMenuItem>
+
+            {/* 
+            <DeleteAccomplishment id={accomplishment.id}>
+              <DropdownMenuItem
+                onSelect={(e) => e.preventDefault()}
+                className="text-red-600"
+              >
+                Delete Accomplishment
+              </DropdownMenuItem>
+            </DeleteAccomplishment> */}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    }
+  }
+];
