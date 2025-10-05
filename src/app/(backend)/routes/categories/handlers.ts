@@ -176,11 +176,21 @@ export const create: AppRouteHandler<CreateCategoryRoute> = async (c) => {
 
     const body = c.req.valid("json");
 
+    // Calculate next display order
+    const maxDisplayOrderResult = await db
+      .select({
+        maxOrder: sql<number>`COALESCE(MAX(${categories.displayOrder}), 0)`
+      })
+      .from(categories);
+
+    const nextDisplayOrder = (maxDisplayOrderResult[0]?.maxOrder ?? 0) + 1;
+
     //   Create new category
     const newCategory = await db
       .insert(categories)
       .values({
-        ...body
+        ...body,
+        displayOrder: nextDisplayOrder
       })
       .returning();
 
@@ -272,7 +282,8 @@ export const update: AppRouteHandler<UpdateCategoryRoute> = async (c) => {
     const updatedCategories = await db
       .update(categories)
       .set({
-        ...body
+        ...body,
+        updatedAt: new Date()
       })
       .where(eq(categories.id, categoryId))
       .returning();
@@ -380,24 +391,6 @@ export const remove: AppRouteHandler<DeleteCategoryRoute> = async (c) => {
 };
 
 // Reorder categories handler
-
-// Example:
-/**
-
-// Batch update all priority indices
-const updates = body.items.map((item) =>
-    db
-    .update(education)
-    .set({ priorityIndex: item.priorityIndex, updatedAt: new Date() })
-    .where(eq(education.id, item.id))
-);
-
-console.log({ updates });
-
-await Promise.all(updates);
-
-*/
-
 export const reorder: AppRouteHandler<ReorderCategoriesRoute> = async (c) => {
   try {
     const session = c.get("session");
@@ -437,15 +430,17 @@ export const reorder: AppRouteHandler<ReorderCategoriesRoute> = async (c) => {
       );
     }
 
-    //   Update category order
-    const updates = body.items.map((item) =>
-      db
-        .update(categories)
-        .set({ displayOrder: item.displayOrder, updatedAt: new Date() })
-        .where(eq(categories.id, item.id))
-    );
+    //   Update category order in a transaction for data consistency
+    await db.transaction(async (tx) => {
+      const updates = body.items.map((item) =>
+        tx
+          .update(categories)
+          .set({ displayOrder: item.displayOrder, updatedAt: new Date() })
+          .where(eq(categories.id, item.id))
+      );
 
-    await Promise.all(updates);
+      await Promise.all(updates);
+    });
 
     return c.json(
       { message: "Categories successfully reordered" },

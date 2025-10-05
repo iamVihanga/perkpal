@@ -25,7 +25,7 @@ export const subcategoryBaseSchema = z.object({
 
   name: z.string().min(1).max(255),
   slug: z.string().min(1).max(255),
-  description: z.string(),
+  description: z.string().nullable(),
 
   displayOrder: z.number().min(0).default(0),
 
@@ -49,7 +49,7 @@ export const selectSubcategorySchema = subcategoryBaseSchema
   .omit({ ogImageId: true })
   .extend({
     parent: categoryBaseSchema.optional(),
-    opengraphImage: mediaSchema
+    opengraphImage: mediaSchema.optional()
   });
 
 // Select category schema
