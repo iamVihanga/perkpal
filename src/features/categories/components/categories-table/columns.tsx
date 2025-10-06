@@ -3,7 +3,6 @@ import Link from "next/link";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { ImageIcon, MoreHorizontal } from "lucide-react";
-import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { SelectCategoryT } from "@/lib/zod/categories.zod";
+import { CldImage } from "next-cloudinary";
 
 // This type is used to define the shape of our data.
 export type Category = Omit<SelectCategoryT, "createdAt"> & {
@@ -28,17 +28,17 @@ export const columns: ColumnDef<Category>[] = [
     header: "Name",
     cell: ({ row }) => {
       const name = row.getValue("name") as string;
-      const thumbnailUrl = row.original.opengraphImage?.url;
+      const publicId = row.original.opengraphImage?.publicId;
 
       return (
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center size-8 overflow-hidden">
-            {thumbnailUrl ? (
-              <Image
-                src={thumbnailUrl}
-                alt="Thumbnail"
-                width={64}
-                height={64}
+            {publicId ? (
+              <CldImage
+                src={publicId}
+                alt={name}
+                width={100}
+                height={100}
                 className="rounded-md object-cover w-full h-full"
               />
             ) : (

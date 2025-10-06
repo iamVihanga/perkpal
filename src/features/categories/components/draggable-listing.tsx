@@ -20,6 +20,8 @@ export default function DraggableCategoryTable() {
     search: searchQuery
   });
 
+  console.log(data);
+
   const { mutate: reorderCategories, isPending: isReordering } =
     useReorderCategories();
 

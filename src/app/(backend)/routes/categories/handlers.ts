@@ -190,6 +190,7 @@ export const create: AppRouteHandler<CreateCategoryRoute> = async (c) => {
       .insert(categories)
       .values({
         ...body,
+        og_image_id: body.ogImageId || null,
         displayOrder: nextDisplayOrder
       })
       .returning();

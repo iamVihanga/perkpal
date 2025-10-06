@@ -131,13 +131,6 @@ export const getById: AppRouteHandler<GetByIdRoute> = async (c) => {
     );
   }
 
-  if (selectMedia.uploadedBy === session.userId) {
-    return c.json(
-      { message: HttpStatusPhrases.FORBIDDEN },
-      HttpStatusCodes.FORBIDDEN
-    );
-  }
-
   return c.json(selectMedia, HttpStatusCodes.OK);
 };
 

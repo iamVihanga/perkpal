@@ -3,6 +3,10 @@ import { timestamp } from "drizzle-orm/pg-core";
 
 import { z } from "zod";
 
+// Constants
+export const cloudinaryPreset =
+  process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "perkpal";
+
 // ---------- Database Helpers ----------
 export const timestamps = {
   createdAt: timestamp("created_at").defaultNow().notNull(),
