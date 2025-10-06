@@ -1,21 +1,21 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useId } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { getClient } from "@/lib/rpc/client";
-import { type InsertEducationSchemaT } from "@/lib/zod/education.zod";
+import { type CreateCategoryT } from "@/lib/zod/categories.zod";
 
-export const useCreateEducation = () => {
+export const useCreateCategory = () => {
   const queryClient = useQueryClient();
   const toastId = useId();
 
   const mutation = useMutation({
-    mutationFn: async (values: InsertEducationSchemaT) => {
+    mutationFn: async (values: CreateCategoryT) => {
       const rpcClient = await getClient();
 
-      const response = await rpcClient.api.education.$post({
+      const response = await rpcClient.api.categories.$post({
         json: values
-      });
+      })
 
       if (!response.ok) {
         const { message } = await response.json();
@@ -26,23 +26,23 @@ export const useCreateEducation = () => {
       return data;
     },
     onMutate: () => {
-      toast.loading("Creating education entry...", {
+      toast.loading("Creating new category...", {
         id: toastId
       });
     },
     onSuccess: (data) => {
-      toast.success("Education entry created successfully!", {
+      toast.success("Category created successfully!", {
         id: toastId
       });
 
       queryClient.invalidateQueries({
-        queryKey: ["educations"]
+        queryKey: ["categories"]
       });
 
       return data;
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to create education entry", {
+      toast.error(error.message || "Failed to create category", {
         id: toastId
       });
     }
