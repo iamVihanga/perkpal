@@ -39,3 +39,5 @@ export const reorderItemsSchema = z.object({
     })
   )
 });
+
+export type ReorderItemsT = z.infer<typeof reorderItemsSchema>;
