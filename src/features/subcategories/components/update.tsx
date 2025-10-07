@@ -30,8 +30,8 @@ import {
   FormMessage
 } from "@/components/ui/form";
 
-import { useUpdateCategory } from "../queries/use-update-category";
-import { useGetCategoryByID } from "../queries/use-get-category-by-id";
+import { useUpdateCategory } from "../queries/use-update-subcategory";
+import { useGetCategoryByID } from "../queries/use-get-subcategory-by-id";
 import { PlusIcon } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";

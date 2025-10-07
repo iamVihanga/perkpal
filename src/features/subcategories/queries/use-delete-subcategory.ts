@@ -3,19 +3,17 @@ import { useId } from "react";
 import { toast } from "sonner";
 
 import { getClient } from "@/lib/rpc/client";
-import { UpdateCategoryT } from "@/lib/zod/categories.zod";
 
-export const useUpdateCategory = (id: string) => {
+export const useDeleteSubcategory = (id: string) => {
   const queryClient = useQueryClient();
   const toastId = useId();
 
   const mutation = useMutation({
-    mutationFn: async (values: UpdateCategoryT) => {
+    mutationFn: async () => {
       const rpcClient = await getClient();
 
-      const response = await rpcClient.api.categories[":id"].$put({
-        param: { id },
-        json: values
+      const response = await rpcClient.api.subcategories[":id"].$delete({
+        param: { id }
       });
 
       if (!response.ok) {
@@ -27,27 +25,23 @@ export const useUpdateCategory = (id: string) => {
       return data;
     },
     onMutate: () => {
-      toast.loading("Updating category...", {
+      toast.loading("Subcategory is deleting...", {
         id: toastId
       });
     },
     onSuccess: (data) => {
-      toast.success("Category updated successfully!", {
+      toast.success("Subcategory deleted successfully!", {
         id: toastId
       });
 
       queryClient.invalidateQueries({
-        queryKey: ["categories"]
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["categories", { id }]
+        queryKey: ["subcategories"]
       });
 
       return data;
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to update category", {
+      toast.error(error.message || "Failed to delete subcategory", {
         id: toastId
       });
     }

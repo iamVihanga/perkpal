@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { getClient } from "@/lib/rpc/client";
 import { ReorderItemsT } from "@/lib/helpers";
 
-export const useReorderCategories = () => {
+export const useReorderSubcategories = () => {
   const queryClient = useQueryClient();
   const toastId = useId();
 
@@ -13,7 +13,7 @@ export const useReorderCategories = () => {
     mutationFn: async (values: ReorderItemsT) => {
       const rpcClient = await getClient();
 
-      const response = await rpcClient.api.categories.reorder.$patch({
+      const response = await rpcClient.api.subcategories.reorder.$patch({
         json: values
       });
 
@@ -37,7 +37,7 @@ export const useReorderCategories = () => {
       });
 
       queryClient.invalidateQueries({
-        queryKey: ["categories"]
+        queryKey: ["subcategories"]
       });
 
       return data;

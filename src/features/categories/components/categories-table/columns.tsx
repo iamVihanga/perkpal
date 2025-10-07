@@ -21,6 +21,7 @@ import {
 import { SelectCategoryT } from "@/lib/zod/categories.zod";
 
 import { DeleteCategory } from "../delete";
+import Link from "next/link";
 
 // This type is used to define the shape of our data.
 export type Category = Omit<SelectCategoryT, "createdAt"> & {
@@ -89,10 +90,13 @@ export const createColumns = (
     cell: ({ row }) => {
       const subcategories = row.original.subcategories || [];
       return (
-        <div className="text-muted-foreground">
+        <Link
+          href={`/dashboard/subcategories?category=${row.original.id}`}
+          className="text-muted-foreground hover:underline cursor-pointer"
+        >
           {subcategories.length} Subcategor
           {subcategories.length !== 1 ? "ies" : "y"}
-        </div>
+        </Link>
       );
     }
   },

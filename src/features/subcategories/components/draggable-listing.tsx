@@ -5,25 +5,27 @@ import { DraggableDataTable } from "@/components/table/draggable-data-table";
 import { DataTableSkeleton } from "@/components/table/data-table-skeleton";
 import DataTableError from "@/components/table/data-table-error";
 
-import { useGetCategories } from "../queries/use-get-subcategories";
-import { useReorderCategories } from "../queries/use-reorder-categories";
-import { useCategoryTableFilters } from "./subcategories-table/use-subcategory-table-filters";
+import { useGetSubcategories } from "../queries/use-get-subcategories";
+import { useReorderSubcategories } from "../queries/use-reorder-subcategories";
+import { useSubcategoryTableFilters } from "./subcategories-table/use-subcategory-table-filters";
 import { createColumns } from "./subcategories-table/columns";
-import { SelectCategoryT } from "@/lib/zod/categories.zod";
+import { SelectSubcategoryT } from "@/lib/zod/categories.zod";
 
-export default function DraggableCategoryTable() {
-  const { page, limit, searchQuery, setUpdateId } = useCategoryTableFilters();
+export default function DraggableSubcategoryTable() {
+  const { page, limit, searchQuery, setUpdateId, categoryId } =
+    useSubcategoryTableFilters();
 
-  const { data, error, isPending } = useGetCategories({
+  const { data, error, isPending } = useGetSubcategories({
     limit,
     page,
-    search: searchQuery
+    search: searchQuery,
+    categoryId
   });
 
-  const { mutate: reorderCategories, isPending: isReordering } =
-    useReorderCategories();
+  const { mutate: reorderSubcategories, isPending: isReordering } =
+    useReorderSubcategories();
 
-  const handleReorder = (reorderedItems: SelectCategoryT[]) => {
+  const handleReorder = (reorderedItems: SelectSubcategoryT[]) => {
     const reorderPayload = {
       items: reorderedItems.map((item, index) => ({
         id: item.id,
@@ -31,13 +33,13 @@ export default function DraggableCategoryTable() {
       }))
     };
 
-    reorderCategories(reorderPayload);
+    reorderSubcategories(reorderPayload);
   };
 
-  const getItemId = (item: SelectCategoryT) => item.id;
+  const getItemId = (item: SelectSubcategoryT) => item.id;
 
-  const handleUpdateClick = (categoryId: string) => {
-    setUpdateId(categoryId);
+  const handleUpdateClick = (subcategoryId: string) => {
+    setUpdateId(subcategoryId);
   };
 
   const columns = createColumns(handleUpdateClick);

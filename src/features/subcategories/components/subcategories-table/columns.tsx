@@ -18,19 +18,19 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 
-import { SelectCategoryT } from "@/lib/zod/categories.zod";
+import type { SelectSubcategoryT } from "@/lib/zod/categories.zod";
 
-import { DeleteCategory } from "../delete";
+import { DeleteSubcategory } from "../delete";
 
 // This type is used to define the shape of our data.
-export type Category = Omit<SelectCategoryT, "createdAt"> & {
+export type Subcategory = Omit<SelectSubcategoryT, "createdAt"> & {
   createdAt: string;
   updatedAt: string | null;
 };
 
 export const createColumns = (
   onUpdateClick: (id: string) => void
-): ColumnDef<Category>[] => [
+): ColumnDef<Subcategory>[] => [
   {
     accessorKey: "name",
     header: "Name",
@@ -84,16 +84,12 @@ export const createColumns = (
     }
   },
   {
-    accessorKey: "subcategories",
-    header: "Subcategories",
+    accessorKey: "category",
+    header: "Parent",
     cell: ({ row }) => {
-      const subcategories = row.original.subcategories || [];
-      return (
-        <div className="text-muted-foreground">
-          {subcategories.length} Subcategor
-          {subcategories.length !== 1 ? "ies" : "y"}
-        </div>
-      );
+      const parentCategory = row.original.category || null;
+
+      return <p className="text-muted-foreground">{parentCategory?.name}</p>;
     }
   },
   {
@@ -110,7 +106,7 @@ export const createColumns = (
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const category = row.original;
+      const subcategory = row.original;
 
       return (
         <DropdownMenu modal={false}>
@@ -123,25 +119,25 @@ export const createColumns = (
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-            <DropdownMenuItem
+            {/* <DropdownMenuItem
               onSelect={(e) => {
                 e.preventDefault();
-                onUpdateClick(category.id);
+                onUpdateClick(subcategory.id);
               }}
             >
               <MoreHorizontalIcon className="size-4 mr-2" />
-              Update Category
-            </DropdownMenuItem>
+              Update Subcategory
+            </DropdownMenuItem> */}
 
-            <DeleteCategory id={category.id}>
+            <DeleteSubcategory id={subcategory.id}>
               <DropdownMenuItem
                 onSelect={(e) => e.preventDefault()}
                 className="text-red-600"
               >
                 <TrashIcon className="size-4 mr-2" />
-                Delete Category
+                Delete Subcategory
               </DropdownMenuItem>
-            </DeleteCategory>
+            </DeleteSubcategory>
           </DropdownMenuContent>
         </DropdownMenu>
       );

@@ -32,7 +32,7 @@ import {
   FormLabel,
   FormMessage
 } from "@/components/ui/form";
-import { useCreateCategory } from "../queries/use-create-category";
+import { useCreateCategory } from "../queries/use-create-subcategory";
 import { Separator } from "@/components/ui/separator";
 import { useSaveMedia } from "@/modules/media/queries/use-save-media";
 import { MediaUploadWidget } from "@/modules/media/components/upload-widget";

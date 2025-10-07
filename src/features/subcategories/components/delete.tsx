@@ -14,16 +14,16 @@ import {
   AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { useDeleteCategory } from "../queries/use-delete-category";
+import { useDeleteSubcategory } from "../queries/use-delete-subcategory";
 
 type Props = {
   id: string;
   children: React.ReactNode;
 };
 
-export function DeleteCategory({ id, children }: Props) {
+export function DeleteSubcategory({ id, children }: Props) {
   const [open, setOpen] = useState(false);
-  const { mutate, isPending } = useDeleteCategory(id);
+  const { mutate, isPending } = useDeleteSubcategory(id);
 
   const handleDelete = () => {
     mutate(undefined, {
