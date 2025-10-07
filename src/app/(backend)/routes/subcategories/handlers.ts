@@ -85,15 +85,7 @@ export const list: AppRouteHandler<ListSubcategoriesRoute> = async (c) => {
           ...subcategory,
           description: subcategory.description || null,
           opengraphImage: subcategory.ogImage || undefined,
-          displayOrder: subcategory.displayOrder || undefined,
-          parent: subcategory.category
-            ? {
-                ...subcategory.category,
-                description: subcategory.category.description || null,
-                opengraphImage: subcategory.category.ogImage || undefined,
-                displayOrder: subcategory.category.displayOrder || undefined
-              }
-            : undefined
+          displayOrder: subcategory.displayOrder || undefined
         })) as SelectSubcategoryT[],
         meta: {
           currentPage: pageNum,
@@ -145,15 +137,7 @@ export const getById: AppRouteHandler<GetSubcategoryByIdRoute> = async (c) => {
         ...subcategory,
         description: subcategory.description || null,
         opengraphImage: subcategory.ogImage || undefined,
-        displayOrder: subcategory.displayOrder || undefined,
-        parent: subcategory.category
-          ? {
-              ...subcategory.category,
-              description: subcategory.category.description || null,
-              opengraphImage: subcategory.category.ogImage || undefined,
-              displayOrder: subcategory.category.displayOrder || undefined
-            }
-          : undefined
+        displayOrder: subcategory.displayOrder || undefined
       } as SelectSubcategoryT,
       HttpStatusCodes.OK
     );
@@ -250,16 +234,7 @@ export const create: AppRouteHandler<CreateSubcategoryRoute> = async (c) => {
         ...createdSubcategory,
         description: createdSubcategory.description || null,
         opengraphImage: createdSubcategory.ogImage || undefined,
-        displayOrder: createdSubcategory.displayOrder || undefined,
-        parent: createdSubcategory.category
-          ? {
-              ...createdSubcategory.category,
-              description: createdSubcategory.category.description || null,
-              opengraphImage: createdSubcategory.category.ogImage || undefined,
-              displayOrder:
-                createdSubcategory.category.displayOrder || undefined
-            }
-          : undefined
+        displayOrder: createdSubcategory.displayOrder || undefined
       } as SelectSubcategoryT,
       HttpStatusCodes.CREATED
     );
@@ -369,16 +344,7 @@ export const update: AppRouteHandler<UpdateSubcategoryRoute> = async (c) => {
         ...updatedSubcategory,
         description: updatedSubcategory.description || null,
         opengraphImage: updatedSubcategory.ogImage || undefined,
-        displayOrder: updatedSubcategory.displayOrder || undefined,
-        parent: updatedSubcategory.category
-          ? {
-              ...updatedSubcategory.category,
-              description: updatedSubcategory.category.description || null,
-              opengraphImage: updatedSubcategory.category.ogImage || undefined,
-              displayOrder:
-                updatedSubcategory.category.displayOrder || undefined
-            }
-          : undefined
+        displayOrder: updatedSubcategory.displayOrder || undefined
       } as SelectSubcategoryT,
       HttpStatusCodes.OK
     );

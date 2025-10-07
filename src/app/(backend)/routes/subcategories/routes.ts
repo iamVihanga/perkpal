@@ -53,7 +53,7 @@ export const getById = createRoute({
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
       selectSubcategorySchema,
-      "The subcategory item with populated parent category"
+      "The subcategory item with populated fields"
     ),
     [HttpStatusCodes.NOT_FOUND]: jsonContent(
       errorMessageSchema,
