@@ -32,11 +32,11 @@ export function NavUser() {
     return <Skeleton className="h-10 w-full rounded-md" />;
   }
 
-  if (error) {
+  if (error || !data) {
     return <></>;
   }
 
-  const { user } = data!;
+  const { user } = data;
 
   const parsedName = user.name || user.email.split("@")[0];
 
