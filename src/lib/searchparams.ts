@@ -10,7 +10,8 @@ export const searchParams = {
   limit: parseAsInteger.withDefault(10),
   q: parseAsString,
   sort: parseAsString,
-  update: parseAsString
+  update: parseAsString,
+  category: parseAsString
 };
 
 export const searchParamsCache = createSearchParamsCache(searchParams);

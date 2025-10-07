@@ -48,7 +48,7 @@ export type SubcategoryBaseT = z.infer<typeof subcategoryBaseSchema>;
 export const selectSubcategorySchema = subcategoryBaseSchema
   .omit({ ogImageId: true })
   .extend({
-    parent: categoryBaseSchema.optional(),
+    category: categoryBaseSchema.optional(),
     opengraphImage: mediaSchema.optional()
   });
 
