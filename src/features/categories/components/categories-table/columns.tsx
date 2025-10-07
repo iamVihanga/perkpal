@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { CldImage } from "next-cloudinary";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { ImageIcon, MoreHorizontal } from "lucide-react";
@@ -14,7 +15,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { SelectCategoryT } from "@/lib/zod/categories.zod";
-import { CldImage } from "next-cloudinary";
+
+import { DeleteCategory } from "../delete";
 
 // This type is used to define the shape of our data.
 export type Category = Omit<SelectCategoryT, "createdAt"> & {
@@ -119,15 +121,14 @@ export const columns: ColumnDef<Category>[] = [
               <Link href={`#`}>{category.name}</Link>
             </DropdownMenuItem>
 
-            {/* 
-            <DeleteAccomplishment id={accomplishment.id}>
+            <DeleteCategory id={category.id}>
               <DropdownMenuItem
                 onSelect={(e) => e.preventDefault()}
                 className="text-red-600"
               >
-                Delete Accomplishment
+                Delete Category
               </DropdownMenuItem>
-            </DeleteAccomplishment> */}
+            </DeleteCategory>
           </DropdownMenuContent>
         </DropdownMenu>
       );

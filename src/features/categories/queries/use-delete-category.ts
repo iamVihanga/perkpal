@@ -4,7 +4,7 @@ import { toast } from "sonner";
 
 import { getClient } from "@/lib/rpc/client";
 
-export const useDeleteEducation = (id: string) => {
+export const useDeleteCategory = (id: string) => {
   const queryClient = useQueryClient();
   const toastId = useId();
 
@@ -12,7 +12,7 @@ export const useDeleteEducation = (id: string) => {
     mutationFn: async () => {
       const rpcClient = await getClient();
 
-      const response = await rpcClient.api.education[":id"].$delete({
+      const response = await rpcClient.api.categories[":id"].$delete({
         param: { id }
       });
 
@@ -25,23 +25,23 @@ export const useDeleteEducation = (id: string) => {
       return data;
     },
     onMutate: () => {
-      toast.loading("Deleting education entry...", {
+      toast.loading("Category deleting...", {
         id: toastId
       });
     },
     onSuccess: (data) => {
-      toast.success("Education entry deleted successfully!", {
+      toast.success("Category deleted successfully!", {
         id: toastId
       });
 
       queryClient.invalidateQueries({
-        queryKey: ["educations"]
+        queryKey: ["categories"]
       });
 
       return data;
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to delete education entry", {
+      toast.error(error.message || "Failed to delete category", {
         id: toastId
       });
     }

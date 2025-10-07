@@ -14,16 +14,16 @@ import {
   AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { useDeleteEducation } from "../queries/use-delete-education";
+import { useDeleteCategory } from "../queries/use-delete-category";
 
 type Props = {
   id: string;
   children: React.ReactNode;
 };
 
-export function DeleteEducation({ id, children }: Props) {
+export function DeleteCategory({ id, children }: Props) {
   const [open, setOpen] = useState(false);
-  const { mutate, isPending } = useDeleteEducation(id);
+  const { mutate, isPending } = useDeleteCategory(id);
 
   const handleDelete = () => {
     mutate(undefined, {
@@ -41,7 +41,7 @@ export function DeleteEducation({ id, children }: Props) {
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
             This action cannot be undone. This will permanently delete this
-            education entry and remove it from our servers.
+            category and remove it from system.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
