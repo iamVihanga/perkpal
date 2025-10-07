@@ -1,9 +1,13 @@
 "use client";
-import Link from "next/link";
-import { CldImage } from "next-cloudinary";
 
+import { CldImage } from "next-cloudinary";
 import { ColumnDef } from "@tanstack/react-table";
-import { ImageIcon, MoreHorizontal } from "lucide-react";
+import {
+  ImageIcon,
+  MoreHorizontal,
+  MoreHorizontalIcon,
+  TrashIcon
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +28,9 @@ export type Category = Omit<SelectCategoryT, "createdAt"> & {
   updatedAt: string | null;
 };
 
-export const columns: ColumnDef<Category>[] = [
+export const createColumns = (
+  onUpdateClick: (id: string) => void
+): ColumnDef<Category>[] => [
   {
     accessorKey: "name",
     header: "Name",
@@ -117,8 +123,14 @@ export const columns: ColumnDef<Category>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-            <DropdownMenuItem asChild>
-              <Link href={`#`}>{category.name}</Link>
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+                onUpdateClick(category.id);
+              }}
+            >
+              <MoreHorizontalIcon className="size-4 mr-2" />
+              Update Category
             </DropdownMenuItem>
 
             <DeleteCategory id={category.id}>
@@ -126,6 +138,7 @@ export const columns: ColumnDef<Category>[] = [
                 onSelect={(e) => e.preventDefault()}
                 className="text-red-600"
               >
+                <TrashIcon className="size-4 mr-2" />
                 Delete Category
               </DropdownMenuItem>
             </DeleteCategory>

@@ -284,6 +284,7 @@ export const update: AppRouteHandler<UpdateCategoryRoute> = async (c) => {
       .update(categories)
       .set({
         ...body,
+        og_image_id: body.ogImageId || null,
         updatedAt: new Date()
       })
       .where(eq(categories.id, categoryId))

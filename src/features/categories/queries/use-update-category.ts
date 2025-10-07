@@ -3,17 +3,17 @@ import { useId } from "react";
 import { toast } from "sonner";
 
 import { getClient } from "@/lib/rpc/client";
-import { type UpdateEducationSchemaT } from "@/lib/zod/education.zod";
+import { UpdateCategoryT } from "@/lib/zod/categories.zod";
 
-export const useUpdateEducation = (id: string) => {
+export const useUpdateCategory = (id: string) => {
   const queryClient = useQueryClient();
   const toastId = useId();
 
   const mutation = useMutation({
-    mutationFn: async (values: UpdateEducationSchemaT) => {
+    mutationFn: async (values: UpdateCategoryT) => {
       const rpcClient = await getClient();
 
-      const response = await rpcClient.api.education[":id"].$patch({
+      const response = await rpcClient.api.categories[":id"].$put({
         param: { id },
         json: values
       });
@@ -27,27 +27,27 @@ export const useUpdateEducation = (id: string) => {
       return data;
     },
     onMutate: () => {
-      toast.loading("Updating education entry...", {
+      toast.loading("Updating category...", {
         id: toastId
       });
     },
     onSuccess: (data) => {
-      toast.success("Education entry updated successfully!", {
+      toast.success("Category updated successfully!", {
         id: toastId
       });
 
       queryClient.invalidateQueries({
-        queryKey: ["educations"]
+        queryKey: ["categories"]
       });
 
       queryClient.invalidateQueries({
-        queryKey: ["educations", { id }]
+        queryKey: ["categories", { id }]
       });
 
       return data;
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to update education entry", {
+      toast.error(error.message || "Failed to update category", {
         id: toastId
       });
     }
