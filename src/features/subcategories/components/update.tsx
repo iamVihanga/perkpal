@@ -18,8 +18,8 @@ import {
 import { Input } from "@/components/ui/input";
 
 import {
-  updateCategorySchema,
-  type UpdateCategoryT
+  updateSubcategorySchema,
+  type UpdateSubcategoryT
 } from "@/lib/zod/categories.zod";
 import {
   Form,
@@ -30,8 +30,8 @@ import {
   FormMessage
 } from "@/components/ui/form";
 
-import { useUpdateCategory } from "../queries/use-update-subcategory";
-import { useGetCategoryByID } from "../queries/use-get-subcategory-by-id";
+import { useUpdateSubcategory } from "../queries/use-update-subcategory";
+import { useGetSubcategoryByID } from "../queries/use-get-subcategory-by-id";
 import { PlusIcon } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -39,20 +39,21 @@ import { IDImageViewer } from "@/modules/media/components/viewer-by-id";
 import { MediaUploadWidget } from "@/modules/media/components/upload-widget";
 import { useSaveMedia } from "@/modules/media/queries/use-save-media";
 import { Card } from "@/components/ui/card";
-import { useCategoryTableFilters } from "./subcategories-table/use-subcategory-table-filters";
+import { useSubcategoryTableFilters } from "./subcategories-table/use-subcategory-table-filters";
+import { ParentCategoryFormSelect } from "@/features/subcategories/components/parent-category-form-select";
 
-interface UpdateCategoryProps {
+interface UpdateSubcategoryProps {
   children?: React.ReactNode;
 }
 
-export function UpdateCategory({ children }: UpdateCategoryProps) {
-  const { updateId, setUpdateId } = useCategoryTableFilters();
+export function UpdateSubcategory({ children }: UpdateSubcategoryProps) {
+  const { updateId, setUpdateId } = useSubcategoryTableFilters();
 
-  const { data: currentCategory, isPending: isFetching } =
-    useGetCategoryByID(updateId);
+  const { data: currentSubcategory, isPending: isFetching } =
+    useGetSubcategoryByID(updateId);
 
   const { mutate: saveMedia } = useSaveMedia();
-  const { mutateAsync, isPending } = useUpdateCategory(updateId);
+  const { mutateAsync, isPending } = useUpdateSubcategory(updateId);
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -62,12 +63,13 @@ export function UpdateCategory({ children }: UpdateCategoryProps) {
     }
   }, [updateId]);
 
-  const form = useForm<UpdateCategoryT>({
-    resolver: zodResolver(updateCategorySchema),
+  const form = useForm<UpdateSubcategoryT>({
+    resolver: zodResolver(updateSubcategorySchema),
     defaultValues: {
       name: "",
       slug: "",
       description: "",
+      parentCategoryId: "",
       seoTitle: null,
       seoDescription: null,
       ogImageId: null
@@ -86,19 +88,20 @@ export function UpdateCategory({ children }: UpdateCategoryProps) {
   }, [form]);
 
   useEffect(() => {
-    if (currentCategory) {
+    if (currentSubcategory) {
       form.reset({
-        name: currentCategory.name || "",
-        slug: currentCategory.slug || "",
-        description: currentCategory.description || "",
-        seoTitle: currentCategory.seoTitle || null,
-        seoDescription: currentCategory.seoDescription || null,
-        ogImageId: currentCategory?.opengraphImage?.id || null
+        name: currentSubcategory.name || "",
+        slug: currentSubcategory.slug || "",
+        description: currentSubcategory.description || "",
+        parentCategoryId: currentSubcategory.categoryId || "",
+        seoTitle: currentSubcategory.seoTitle || null,
+        seoDescription: currentSubcategory.seoDescription || null,
+        ogImageId: currentSubcategory?.opengraphImage?.id || null
       });
     }
-  }, [currentCategory, form]);
+  }, [currentSubcategory, form]);
 
-  const onSubmit = async (values: UpdateCategoryT) => {
+  const onSubmit = async (values: UpdateSubcategoryT) => {
     try {
       await mutateAsync(values, {
         onSuccess: () => {
@@ -138,9 +141,9 @@ export function UpdateCategory({ children }: UpdateCategoryProps) {
           onInteractOutside={(e) => e.preventDefault()}
         >
           <DialogHeader className="flex-shrink-0 px-6 pt-6 pb-4">
-            <DialogTitle>Update Category</DialogTitle>
+            <DialogTitle>Update Subcategory</DialogTitle>
             <DialogDescription>
-              Update the details of the selected category.
+              Update the details of the selected subcategory.
             </DialogDescription>
           </DialogHeader>
 
@@ -152,6 +155,16 @@ export function UpdateCategory({ children }: UpdateCategoryProps) {
               <div className="flex-1 overflow-hidden">
                 <ScrollArea className="h-full px-6">
                   <div className="space-y-5 pb-6">
+                    <ParentCategoryFormSelect
+                      value={form.watch("parentCategoryId")}
+                      onValueChange={(value: string) =>
+                        form.setValue("parentCategoryId", value)
+                      }
+                      label="Parent Category"
+                      required={true}
+                      disabled={isFetching}
+                    />
+
                     <FormField
                       control={form.control}
                       name="name"
@@ -161,7 +174,7 @@ export function UpdateCategory({ children }: UpdateCategoryProps) {
                           <FormLabel className="text-sm">Name *</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Life Style, Co-Working etc..."
+                              placeholder="Premium Dining, Gym Access etc..."
                               {...field}
                             />
                           </FormControl>
@@ -176,7 +189,7 @@ export function UpdateCategory({ children }: UpdateCategoryProps) {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-sm">
-                            Category Slug
+                            Subcategory Slug
                           </FormLabel>
                           <FormControl>
                             <Input disabled {...field} />
@@ -195,7 +208,7 @@ export function UpdateCategory({ children }: UpdateCategoryProps) {
                           <FormLabel className="text-sm">Description</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Category Description"
+                              placeholder="Subcategory Description"
                               name={field.name}
                               value={(field.value as string) || ""}
                               onChange={field.onChange}
@@ -222,7 +235,7 @@ export function UpdateCategory({ children }: UpdateCategoryProps) {
                             <FormLabel className="text-sm">SEO Title</FormLabel>
                             <FormControl>
                               <Input
-                                placeholder="Category SEO Optimized Title"
+                                placeholder="Subcategory SEO Optimized Title"
                                 {...field}
                                 name={field.name}
                                 value={(field.value as string) || ""}
@@ -247,7 +260,7 @@ export function UpdateCategory({ children }: UpdateCategoryProps) {
                             </FormLabel>
                             <FormControl>
                               <Input
-                                placeholder="Category SEO Optimized Description"
+                                placeholder="Subcategory SEO Optimized Description"
                                 {...field}
                                 name={field.name}
                                 value={(field.value as string) || ""}

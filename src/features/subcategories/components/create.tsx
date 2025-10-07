@@ -21,8 +21,8 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 import {
-  createCategorySchema,
-  type CreateCategoryT
+  createSubcategorySchema,
+  type CreateSubcategoryT
 } from "@/lib/zod/categories.zod";
 import {
   Form,
@@ -32,24 +32,26 @@ import {
   FormLabel,
   FormMessage
 } from "@/components/ui/form";
-import { useCreateCategory } from "../queries/use-create-subcategory";
+import { useCreateSubcategory } from "../queries/use-create-subcategory";
 import { Separator } from "@/components/ui/separator";
 import { useSaveMedia } from "@/modules/media/queries/use-save-media";
 import { MediaUploadWidget } from "@/modules/media/components/upload-widget";
 import { Card } from "@/components/ui/card";
 import { IDImageViewer } from "@/modules/media/components/viewer-by-id";
+import { ParentCategoryFormSelect } from "@/features/subcategories/components/parent-category-form-select";
 
-export function AddNewCategory() {
+export function AddNewSubcategory() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { mutateAsync, isPending } = useCreateCategory();
+  const { mutateAsync, isPending } = useCreateSubcategory();
   const { mutate: saveMedia } = useSaveMedia();
 
-  const form = useForm<CreateCategoryT>({
-    resolver: zodResolver(createCategorySchema),
+  const form = useForm<CreateSubcategoryT>({
+    resolver: zodResolver(createSubcategorySchema),
     defaultValues: {
       name: "",
       slug: "",
       description: "",
+      parentCategoryId: "",
       seoTitle: null,
       seoDescription: null,
       ogImageId: null
@@ -67,7 +69,7 @@ export function AddNewCategory() {
     return () => subscription.unsubscribe();
   }, [form]);
 
-  const onSubmit = async (values: CreateCategoryT) => {
+  const onSubmit = async (values: CreateSubcategoryT) => {
     try {
       await mutateAsync(values, {
         onSuccess: () => {
@@ -94,7 +96,7 @@ export function AddNewCategory() {
         <DialogTrigger asChild>
           <Button>
             <Plus className="mr-2 h-4 w-4" />
-            Add New Category
+            Add New Subcategory
           </Button>
         </DialogTrigger>
 
@@ -103,9 +105,10 @@ export function AddNewCategory() {
           onInteractOutside={(e) => e.preventDefault()}
         >
           <DialogHeader className="flex-shrink-0 px-6 pt-6 pb-4">
-            <DialogTitle>Add New Category</DialogTitle>
+            <DialogTitle>Add New Subcategory</DialogTitle>
             <DialogDescription>
-              Add a new parent category to organize your perks.
+              Add a new subcategory under a parent category to organize your
+              perks.
             </DialogDescription>
           </DialogHeader>
 
@@ -117,6 +120,15 @@ export function AddNewCategory() {
               <div className="flex-1 overflow-hidden">
                 <ScrollArea className="h-full px-6">
                   <div className="space-y-5 pb-6">
+                    <ParentCategoryFormSelect
+                      value={form.watch("parentCategoryId")}
+                      onValueChange={(value: string) =>
+                        form.setValue("parentCategoryId", value)
+                      }
+                      label="Parent Category"
+                      required={true}
+                    />
+
                     <FormField
                       control={form.control}
                       name="name"
@@ -125,7 +137,7 @@ export function AddNewCategory() {
                           <FormLabel className="text-sm">Name *</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Life Style, Co-Working etc..."
+                              placeholder="Premium Dining, Gym Access etc..."
                               {...field}
                             />
                           </FormControl>
@@ -140,7 +152,7 @@ export function AddNewCategory() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-sm">
-                            Category Slug
+                            Subcategory Slug
                           </FormLabel>
                           <FormControl>
                             <Input disabled {...field} />
@@ -158,7 +170,7 @@ export function AddNewCategory() {
                           <FormLabel className="text-sm">Description</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Category Description"
+                              placeholder="Subcategory Description"
                               name={field.name}
                               value={(field.value as string) || ""}
                               onChange={field.onChange}
@@ -184,7 +196,7 @@ export function AddNewCategory() {
                             <FormLabel className="text-sm">SEO Title</FormLabel>
                             <FormControl>
                               <Input
-                                placeholder="Category SEO Optimized Title"
+                                placeholder="Subcategory SEO Optimized Title"
                                 {...field}
                                 name={field.name}
                                 value={(field.value as string) || ""}
@@ -208,7 +220,7 @@ export function AddNewCategory() {
                             </FormLabel>
                             <FormControl>
                               <Input
-                                placeholder="Category SEO Optimized Description"
+                                placeholder="Subcategory SEO Optimized Description"
                                 {...field}
                                 name={field.name}
                                 value={(field.value as string) || ""}
@@ -302,7 +314,7 @@ export function AddNewCategory() {
                   </Button>
                 </DialogClose>
                 <Button type="submit" disabled={isPending} loading={isPending}>
-                  Add Category
+                  Add Subcategory
                 </Button>
               </DialogFooter>
             </form>

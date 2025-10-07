@@ -119,7 +119,7 @@ export const createColumns = (
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-            {/* <DropdownMenuItem
+            <DropdownMenuItem
               onSelect={(e) => {
                 e.preventDefault();
                 onUpdateClick(subcategory.id);
@@ -127,7 +127,7 @@ export const createColumns = (
             >
               <MoreHorizontalIcon className="size-4 mr-2" />
               Update Subcategory
-            </DropdownMenuItem> */}
+            </DropdownMenuItem>
 
             <DeleteSubcategory id={subcategory.id}>
               <DropdownMenuItem

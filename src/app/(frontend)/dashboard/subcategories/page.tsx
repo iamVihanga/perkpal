@@ -6,8 +6,8 @@ import { AppPageShell } from "@/modules/layouts/page-shell";
 
 import { SubcategoryTableActions } from "@/features/subcategories/components/subcategories-table/subcategory-table-actions";
 import DraggableSubcategoryTable from "@/features/subcategories/components/draggable-listing";
-// import { AddNewCategory } from "@/features/categories/components/create";
-// import { UpdateCategory } from "@/features/categories/components/update";
+import { AddNewSubcategory } from "@/features/subcategories/components/create";
+import { UpdateSubcategory } from "@/features/subcategories/components/update";
 
 export default function DashboardSubcategoriesPage() {
   return (
@@ -16,7 +16,12 @@ export default function DashboardSubcategoriesPage() {
         <AppPageShell
           title="Subcategories"
           description="Manage perk subcategories with reordering"
-          actionComponent={<></>}
+          actionComponent={
+            <>
+              <AddNewSubcategory />
+              <UpdateSubcategory />
+            </>
+          }
         />
 
         <Separator />
