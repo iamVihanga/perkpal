@@ -6,6 +6,8 @@ import { AppPageShell } from "@/modules/layouts/page-shell";
 
 import { CategoryTableActions } from "@/features/categories/components/categories-table/category-table-actions";
 import DraggableCategoryTable from "@/features/categories/components/draggable-listing";
+import { AddNewCategory } from "@/features/categories/components/create";
+import { UpdateCategory } from "@/features/categories/components/update";
 
 export default function DashboardCategoriesPage() {
   return (
@@ -14,7 +16,12 @@ export default function DashboardCategoriesPage() {
         <AppPageShell
           title="All Categories"
           description="Manage perk categories with drag & drop reordering"
-          actionComponent={<></>}
+          actionComponent={
+            <>
+              <AddNewCategory />
+              <UpdateCategory />
+            </>
+          }
         />
 
         <Separator />

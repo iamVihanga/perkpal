@@ -22,6 +22,11 @@ export function useCategoryTableFilters() {
     searchParams.limit.withDefault(10)
   );
 
+  const [updateId, setUpdateId] = useQueryState(
+    "update",
+    searchParams.update.withDefault("")
+  );
+
   const resetFilters = () => {
     setSearchQuery("");
     setPage(1);
@@ -42,6 +47,10 @@ export function useCategoryTableFilters() {
 
     // Reset
     resetFilters,
-    isAnyFilterActive
+    isAnyFilterActive,
+
+    // Update
+    updateId,
+    setUpdateId
   };
 }

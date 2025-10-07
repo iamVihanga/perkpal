@@ -7,16 +7,22 @@ import DataTableError from "@/components/table/data-table-error";
 
 import { useGetCategories } from "../queries/use-get-categories";
 import { useCategoryTableFilters } from "./categories-table/use-category-table-filters";
-import { columns } from "./categories-table/columns";
+import { createColumns } from "./categories-table/columns";
 
 export default function CategoryTable() {
-  const { page, limit, searchQuery } = useCategoryTableFilters();
+  const { page, limit, searchQuery, setUpdateId } = useCategoryTableFilters();
 
   const { data, error, isPending } = useGetCategories({
     limit,
     page,
     search: searchQuery
   });
+
+  const handleUpdateClick = (categoryId: string) => {
+    setUpdateId(categoryId);
+  };
+
+  const columns = createColumns(handleUpdateClick);
 
   if (isPending) {
     return <DataTableSkeleton />;

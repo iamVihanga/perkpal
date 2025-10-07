@@ -8,11 +8,11 @@ import DataTableError from "@/components/table/data-table-error";
 import { useGetCategories } from "../queries/use-get-categories";
 import { useReorderCategories } from "../queries/use-reorder-categories";
 import { useCategoryTableFilters } from "./categories-table/use-category-table-filters";
-import { columns } from "./categories-table/columns";
+import { createColumns } from "./categories-table/columns";
 import { SelectCategoryT } from "@/lib/zod/categories.zod";
 
 export default function DraggableCategoryTable() {
-  const { page, limit, searchQuery } = useCategoryTableFilters();
+  const { page, limit, searchQuery, setUpdateId } = useCategoryTableFilters();
 
   const { data, error, isPending } = useGetCategories({
     limit,
@@ -35,6 +35,12 @@ export default function DraggableCategoryTable() {
   };
 
   const getItemId = (item: SelectCategoryT) => item.id;
+
+  const handleUpdateClick = (categoryId: string) => {
+    setUpdateId(categoryId);
+  };
+
+  const columns = createColumns(handleUpdateClick);
 
   if (isPending) {
     return <DataTableSkeleton columnCount={5} />;

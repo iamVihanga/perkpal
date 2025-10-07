@@ -1,9 +1,13 @@
 "use client";
-import Link from "next/link";
 
+import { CldImage } from "next-cloudinary";
 import { ColumnDef } from "@tanstack/react-table";
-import { ImageIcon, MoreHorizontal } from "lucide-react";
-import Image from "next/image";
+import {
+  ImageIcon,
+  MoreHorizontal,
+  MoreHorizontalIcon,
+  TrashIcon
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,29 +20,33 @@ import {
 
 import { SelectCategoryT } from "@/lib/zod/categories.zod";
 
+import { DeleteCategory } from "../delete";
+
 // This type is used to define the shape of our data.
 export type Category = Omit<SelectCategoryT, "createdAt"> & {
   createdAt: string;
   updatedAt: string | null;
 };
 
-export const columns: ColumnDef<Category>[] = [
+export const createColumns = (
+  onUpdateClick: (id: string) => void
+): ColumnDef<Category>[] => [
   {
     accessorKey: "name",
     header: "Name",
     cell: ({ row }) => {
       const name = row.getValue("name") as string;
-      const thumbnailUrl = row.original.opengraphImage?.url;
+      const publicId = row.original.opengraphImage?.publicId;
 
       return (
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center size-8 overflow-hidden">
-            {thumbnailUrl ? (
-              <Image
-                src={thumbnailUrl}
-                alt="Thumbnail"
-                width={64}
-                height={64}
+            {publicId ? (
+              <CldImage
+                src={publicId}
+                alt={name}
+                width={100}
+                height={100}
                 className="rounded-md object-cover w-full h-full"
               />
             ) : (
@@ -115,19 +123,25 @@ export const columns: ColumnDef<Category>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-            <DropdownMenuItem asChild>
-              <Link href={`#`}>{category.name}</Link>
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+                onUpdateClick(category.id);
+              }}
+            >
+              <MoreHorizontalIcon className="size-4 mr-2" />
+              Update Category
             </DropdownMenuItem>
 
-            {/* 
-            <DeleteAccomplishment id={accomplishment.id}>
+            <DeleteCategory id={category.id}>
               <DropdownMenuItem
                 onSelect={(e) => e.preventDefault()}
                 className="text-red-600"
               >
-                Delete Accomplishment
+                <TrashIcon className="size-4 mr-2" />
+                Delete Category
               </DropdownMenuItem>
-            </DeleteAccomplishment> */}
+            </DeleteCategory>
           </DropdownMenuContent>
         </DropdownMenu>
       );
