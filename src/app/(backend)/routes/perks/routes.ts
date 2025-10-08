@@ -4,7 +4,11 @@ import { jsonContent } from "stoker/openapi/helpers";
 import { z } from "zod";
 
 import { errorMessageSchema, getPaginatedSchema } from "@/lib/server/helpers";
-import { selectPerkSchema, perksQueryParamsSchema } from "@/lib/zod/perks.zod";
+import {
+  selectPerkSchema,
+  perksQueryParamsSchema,
+  getSinglePerkQuerySchema
+} from "@/lib/zod/perks.zod";
 
 const tags: string[] = ["Perks"];
 
@@ -29,5 +33,35 @@ export const list = createRoute({
   }
 });
 
+// Get perk by id route definition
+export const getOne = createRoute({
+  tags,
+  summary: "Get single perk",
+  path: "/get-one",
+  method: "get",
+  request: {
+    query: getSinglePerkQuerySchema
+  },
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      selectPerkSchema,
+      "The perk item with populated fields"
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      errorMessageSchema,
+      "Perk not found"
+    ),
+    [HttpStatusCodes.BAD_REQUEST]: jsonContent(
+      errorMessageSchema,
+      "Invalid request (ID/Slug missing)"
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorMessageSchema,
+      "Internal server error"
+    )
+  }
+});
+
 // Route Type Definitions
 export type ListPerksRouteT = typeof list;
+export type GetPerkRouteT = typeof getOne;

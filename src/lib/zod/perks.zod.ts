@@ -59,6 +59,17 @@ export const perksQueryParamsSchema = z.object({
 
 export type PerksQueryParamsSchema = z.infer<typeof perksQueryParamsSchema>;
 
+export const getSinglePerkQuerySchema = z
+  .object({
+    id: z.string().optional(),
+    slug: z.string().optional()
+  })
+  .refine((data) => data.id || data.slug, {
+    message: "Either id or slug must be provided"
+  });
+
+export type GetSinglePerkQueryT = z.infer<typeof getSinglePerkQuerySchema>;
+
 // Lead Form Config Schema (for form submission redemption method)
 export const leadFormConfigSchema = z.object({
   fields: z.array(
