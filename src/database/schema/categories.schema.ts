@@ -1,4 +1,4 @@
-import { seoFields, timestamps } from "@/lib/helpers";
+import { timestamps, seoFields } from "@/lib/server/helpers";
 import { relations, sql } from "drizzle-orm";
 import {
   check,

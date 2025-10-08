@@ -1,4 +1,24 @@
 import { z } from "zod";
+import { sql } from "drizzle-orm";
+import { text, timestamp } from "drizzle-orm/pg-core";
+
+import { media } from "@/database/schema";
+
+// ---------- Database Helpers ----------
+export const timestamps = {
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => sql`CURRENT_TIMESTAMP`)
+};
+
+export const seoFields = {
+  seoTitle: text("seo_title"),
+  seoDescription: text("seo_description"),
+  og_image_id: text("og_image_id").references(() => media.id, {
+    onDelete: "set null"
+  })
+};
 
 export const errorMessageSchema = z.object({
   message: z.string()

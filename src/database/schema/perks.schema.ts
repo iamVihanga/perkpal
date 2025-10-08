@@ -12,8 +12,10 @@ import {
 } from "drizzle-orm/pg-core";
 import { sql, relations } from "drizzle-orm";
 import { media } from "./media.schema";
-import { FormFieldConfigT, seoFields, timestamps } from "@/lib/helpers";
+import { timestamps, seoFields } from "@/lib/server/helpers";
 import { categories, subcategories } from "./categories.schema";
+
+import type { FormFieldConfigT } from "@/lib/helpers";
 
 export const redemptionMethodEnum = pgEnum("redemption_method", [
   "affiliate_link",

@@ -1,7 +1,3 @@
-import { sql } from "drizzle-orm";
-import { text, timestamp } from "drizzle-orm/pg-core";
-
-import { media } from "@/database/schema";
 import type { FieldTypeT } from "@/lib/zod/perks.zod";
 
 import { z } from "zod";
@@ -9,22 +5,6 @@ import { z } from "zod";
 // Constants
 export const cloudinaryPreset =
   process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "perkpal";
-
-// ---------- Database Helpers ----------
-export const timestamps = {
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
-    .defaultNow()
-    .$onUpdate(() => sql`CURRENT_TIMESTAMP`)
-};
-
-export const seoFields = {
-  seoTitle: text("seo_title"),
-  seoDescription: text("seo_description"),
-  og_image_id: text("og_image_id").references(() => media.id, {
-    onDelete: "set null"
-  })
-};
 
 // --------- Reorder Schema -----------
 export const reorderItemsSchema = z.object({
