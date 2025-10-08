@@ -1,4 +1,4 @@
-import { timestamps } from "@/lib/helpers";
+import { seoFields, timestamps } from "@/lib/helpers";
 import { relations, sql } from "drizzle-orm";
 import {
   check,
@@ -63,12 +63,7 @@ export const subcategories = pgTable(
 
     displayOrder: integer("display_order").default(0),
 
-    // SEO Fields
-    seoTitle: text("seo_title"),
-    seoDescription: text("seo_description"),
-    og_image_id: text("og_image_id").references(() => media.id, {
-      onDelete: "set null"
-    }),
+    ...seoFields,
 
     ...timestamps
   },

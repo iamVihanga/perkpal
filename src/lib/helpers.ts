@@ -1,5 +1,7 @@
+import { media } from "@/database/schema";
+import { FieldTypeT } from "@/database/schema/perks.schema";
 import { sql } from "drizzle-orm";
-import { timestamp } from "drizzle-orm/pg-core";
+import { text, timestamp } from "drizzle-orm/pg-core";
 
 import { z } from "zod";
 
@@ -15,6 +17,14 @@ export const timestamps = {
     .$onUpdate(() => sql`CURRENT_TIMESTAMP`)
 };
 
+export const seoFields = {
+  seoTitle: text("seo_title"),
+  seoDescription: text("seo_description"),
+  og_image_id: text("og_image_id").references(() => media.id, {
+    onDelete: "set null"
+  })
+};
+
 // --------- Reorder Schema -----------
 export const reorderItemsSchema = z.object({
   items: z.array(
@@ -26,3 +36,49 @@ export const reorderItemsSchema = z.object({
 });
 
 export type ReorderItemsT = z.infer<typeof reorderItemsSchema>;
+
+// --------- Form Field Config Type -----------
+export interface FormFieldConfigT {
+  fields: Array<{
+    id: string;
+    type: FieldTypeT;
+    label: string;
+    placeholder?: string;
+    required: boolean;
+    options?: string[];
+    validation?: {
+      pattern?: string;
+      minLength?: number;
+      maxLength?: number;
+      errorMessage?: string;
+    };
+    helpText?: string;
+  }>;
+
+  // Post-submission behavior
+  thankYou: {
+    title: string; // "Thank you!"
+    message: string; // "We'll contact you soon"
+    showPerkDetails: boolean; // Show perk info on thank you page
+  };
+
+  // Redirect configuration
+  redirect?: {
+    enabled: boolean;
+    url: string; // External URL to redirect to
+    delay: number; // Milliseconds to wait before redirect
+  };
+
+  // Partner notification
+  notification?: {
+    enabled: boolean;
+    partnerEmail: string; // Where to send lead notifications
+    sendImmediately: boolean; // Or batch weekly
+  };
+
+  // Privacy/compliance
+  consent: {
+    required: boolean;
+    text: string; // "I agree to share my information..."
+  };
+}
