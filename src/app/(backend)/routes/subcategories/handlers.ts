@@ -83,9 +83,14 @@ export const list: AppRouteHandler<ListSubcategoriesRoute> = async (c) => {
       {
         data: subcategoryEntries.map((subcategory) => ({
           ...subcategory,
-          description: subcategory.description || null,
+          // Only fix the problematic fields
           opengraphImage: subcategory.ogImage || undefined,
-          displayOrder: subcategory.displayOrder || undefined
+          category: subcategory.category
+            ? {
+                ...subcategory.category,
+                ogImageId: subcategory.category.og_image_id
+              }
+            : undefined
         })) as SelectSubcategoryT[],
         meta: {
           currentPage: pageNum,
@@ -135,9 +140,14 @@ export const getById: AppRouteHandler<GetSubcategoryByIdRoute> = async (c) => {
     return c.json(
       {
         ...subcategory,
-        description: subcategory.description || null,
+        // Only fix the problematic fields
         opengraphImage: subcategory.ogImage || undefined,
-        displayOrder: subcategory.displayOrder || undefined
+        category: subcategory.category
+          ? {
+              ...subcategory.category,
+              ogImageId: subcategory.category.og_image_id
+            }
+          : undefined
       } as SelectSubcategoryT,
       HttpStatusCodes.OK
     );
@@ -232,9 +242,14 @@ export const create: AppRouteHandler<CreateSubcategoryRoute> = async (c) => {
     return c.json(
       {
         ...createdSubcategory,
-        description: createdSubcategory.description || null,
+        // Only fix the problematic fields
         opengraphImage: createdSubcategory.ogImage || undefined,
-        displayOrder: createdSubcategory.displayOrder || undefined
+        category: createdSubcategory.category
+          ? {
+              ...createdSubcategory.category,
+              ogImageId: createdSubcategory.category.og_image_id
+            }
+          : undefined
       } as SelectSubcategoryT,
       HttpStatusCodes.CREATED
     );
@@ -342,9 +357,14 @@ export const update: AppRouteHandler<UpdateSubcategoryRoute> = async (c) => {
     return c.json(
       {
         ...updatedSubcategory,
-        description: updatedSubcategory.description || null,
+        // Only fix the problematic fields
         opengraphImage: updatedSubcategory.ogImage || undefined,
-        displayOrder: updatedSubcategory.displayOrder || undefined
+        category: updatedSubcategory.category
+          ? {
+              ...updatedSubcategory.category,
+              ogImageId: updatedSubcategory.category.og_image_id
+            }
+          : undefined
       } as SelectSubcategoryT,
       HttpStatusCodes.OK
     );

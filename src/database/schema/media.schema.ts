@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 import { integer, pgTable, text } from "drizzle-orm/pg-core";
-import { timestamps } from "@/lib/helpers";
+import { timestamps } from "@/lib/server/helpers";
 import { user } from "./auth.schema";
 
 export const media = pgTable("media", {
