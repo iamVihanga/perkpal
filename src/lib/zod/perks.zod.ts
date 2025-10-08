@@ -1,21 +1,3 @@
-/**
- * Perks Zod Schemas and Types
- *
- * This file contains comprehensive Zod schemas for the Perks feature including:
- * - Base schemas for perks with all database fields
- * - CRUD operation schemas (create, update, select)
- * - Lead form configuration for form submission redemption method
- * - Query parameter schemas for API endpoints
- * - Proper validation for redemption method specific fields
- * - Date validation (end date after start date)
- * - Type exports for TypeScript integration
- *
- * Redemption Methods:
- * - affiliate_link: Requires affiliateLink field
- * - coupon_code: Requires couponCode field
- * - form_submission: Requires leadFormSlug and leadFormConfig fields
- */
-
 import { z } from "zod";
 
 import {
