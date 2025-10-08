@@ -1,13 +1,14 @@
 import { createRoute } from "@hono/zod-openapi";
 import * as HttpStatusCodes from "stoker/http-status-codes";
-import { jsonContent } from "stoker/openapi/helpers";
+import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
 import { z } from "zod";
 
 import { errorMessageSchema, getPaginatedSchema } from "@/lib/server/helpers";
 import {
   selectPerkSchema,
   perksQueryParamsSchema,
-  getSinglePerkQuerySchema
+  getSinglePerkQuerySchema,
+  createPerkSchema
 } from "@/lib/zod/perks.zod";
 
 const tags: string[] = ["Perks"];
@@ -62,6 +63,40 @@ export const getOne = createRoute({
   }
 });
 
+// Create perk route definition
+export const create = createRoute({
+  tags,
+  summary: "Create a new perk",
+  path: "/",
+  method: "post",
+  request: {
+    body: jsonContentRequired(createPerkSchema, "New perk request body payload")
+  },
+  responses: {
+    [HttpStatusCodes.CREATED]: jsonContent(
+      selectPerkSchema,
+      "The created perk with populated fields"
+    ),
+    [HttpStatusCodes.BAD_REQUEST]: jsonContent(
+      errorMessageSchema,
+      "Invalid request payload"
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorMessageSchema,
+      "Internal server error"
+    ),
+    [HttpStatusCodes.UNAUTHORIZED]: jsonContent(
+      errorMessageSchema,
+      "Unauthorized access"
+    ),
+    [HttpStatusCodes.FORBIDDEN]: jsonContent(
+      errorMessageSchema,
+      "Forbidden access"
+    )
+  }
+});
+
 // Route Type Definitions
 export type ListPerksRouteT = typeof list;
 export type GetPerkRouteT = typeof getOne;
+export type CreatePerkRouteT = typeof create;
