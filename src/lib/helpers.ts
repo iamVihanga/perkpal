@@ -1,7 +1,8 @@
-import { media } from "@/database/schema";
-import { FieldTypeT } from "@/database/schema/perks.schema";
 import { sql } from "drizzle-orm";
 import { text, timestamp } from "drizzle-orm/pg-core";
+
+import { media } from "@/database/schema";
+import type { FieldTypeT } from "@/lib/zod/perks.zod";
 
 import { z } from "zod";
 

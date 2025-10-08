@@ -57,6 +57,13 @@
       "when": 1759912744708,
       "tag": "0007_funny_deadpool",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1759919263072,
+      "tag": "0008_sloppy_namora",
+      "breakpoints": true
     }
   ]
 }
