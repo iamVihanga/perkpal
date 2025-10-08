@@ -42,6 +42,23 @@ export const locationEnumZod = z.enum(locationEnum.enumValues);
 
 export type LocationT = z.infer<typeof locationEnumZod>;
 
+// Query and other api related schemas
+export const perksQueryParamsSchema = z.object({
+  page: z.string().optional(),
+  limit: z.string().optional(),
+  sort: z.enum(["asc", "desc"]).optional().default("desc"),
+
+  // Filters
+  search: z.string().optional(),
+  categoryId: z.string().optional(),
+  subcategoryId: z.string().optional(),
+  location: z.string().optional(),
+  status: z.string().optional(),
+  redemptionMethod: z.string().optional()
+});
+
+export type PerksQueryParamsSchema = z.infer<typeof perksQueryParamsSchema>;
+
 // Lead Form Config Schema (for form submission redemption method)
 export const leadFormConfigSchema = z.object({
   fields: z.array(
