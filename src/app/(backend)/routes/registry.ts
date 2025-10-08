@@ -7,13 +7,15 @@ import tasks from "./tasks";
 import media from "./media";
 import categories from "./categories";
 import subcategories from "./subcategories";
+import perks from "./perks";
 
 export function registerRoutes(app: AppOpenAPI) {
   return app
     .route("/tasks", tasks)
     .route("/media", media)
     .route("/categories", categories)
-    .route("/subcategories", subcategories);
+    .route("/subcategories", subcategories)
+    .route("/perks", perks);
 }
 
 // stand alone router type used for api client
