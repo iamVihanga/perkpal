@@ -127,10 +127,14 @@ export const perkBaseSchema = z.object({
   displayOrder: z.number().int().min(0).default(0),
   status: z.string().default("active"),
 
+  keywords: z.string().array().default([]),
+
   // SEO Fields
   seoTitle: z.string().nullable(),
   seoDescription: z.string().nullable(),
   ogImageId: z.string().nullable(),
+
+  canonicalUrl: z.string().nullable(),
 
   createdAt: z.date().nullable(),
   updatedAt: z.date().nullable()
