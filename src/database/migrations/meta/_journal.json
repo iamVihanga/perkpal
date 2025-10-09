@@ -71,6 +71,13 @@
       "when": 1759999809222,
       "tag": "0009_bouncy_thunderbolt_ross",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1760033033695,
+      "tag": "0010_aromatic_blue_shield",
+      "breakpoints": true
     }
   ]
 }

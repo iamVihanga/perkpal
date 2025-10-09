@@ -134,6 +134,8 @@ export const perkBaseSchema = z.object({
   seoDescription: z.string().nullable(),
   ogImageId: z.string().nullable(),
 
+  canonicalUrl: z.string().nullable(),
+
   createdAt: z.date().nullable(),
   updatedAt: z.date().nullable()
 });

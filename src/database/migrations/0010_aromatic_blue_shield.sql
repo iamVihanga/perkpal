@@ -1,0 +1,1 @@
+ALTER TABLE "perks" ADD COLUMN "canonical_url" text;

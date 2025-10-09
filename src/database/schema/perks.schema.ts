@@ -85,6 +85,8 @@ export const perks = pgTable(
     status: text("status").notNull().default("active"),
     displayOrder: integer("display_order").default(0),
 
+    canonicalUrl: text("canonical_url"),
+
     ...seoFields,
     ...timestamps
   },
