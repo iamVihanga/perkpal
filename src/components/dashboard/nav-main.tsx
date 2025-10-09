@@ -69,24 +69,14 @@ export function NavMain({
   };
 
   const isActive = (href: string): boolean => {
-    if (href === "/dashboard") {
-      return pathname === href;
-    } else {
-      const trimmedPathname = pathname.replace("/dashboard", "");
-      const trimmedUrl = href.replace("/dashboard", "");
-      return (
-        trimmedPathname.startsWith(trimmedUrl) || trimmedPathname === trimmedUrl
-      );
-    }
+    return pathname === href;
   };
 
   const isItemActive = (item: (typeof items)[0]): boolean => {
     if (item.items) {
-      // Check if any sub-item is active
-      return (
-        item.items.some((subItem) => isActive(subItem.url)) ||
-        isActive(item.url)
-      );
+      // For collapsible items, only check if any sub-item is active
+      // Don't make the parent active just because we're in a sub-route
+      return item.items.some((subItem) => isActive(subItem.url));
     }
     return isActive(item.url);
   };

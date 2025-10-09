@@ -46,7 +46,7 @@ interface RichTextEditorProps {
 export function RichTextEditor({
   content = "",
   onChange,
-  placeholder = "Start writing...",
+  placeholder = "",
   className,
   disabled = false
 }: RichTextEditorProps) {
@@ -55,6 +55,7 @@ export function RichTextEditor({
   const [linkUrl, setLinkUrl] = useState("");
 
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit,
       Underline,

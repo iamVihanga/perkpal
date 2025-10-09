@@ -77,6 +77,10 @@ export const perks = pgTable(
       onDelete: "set null"
     }),
 
+    keywords: text("keywords")
+      .array()
+      .default(sql`ARRAY[]::text[]`),
+
     isFeatured: boolean("is_featured").notNull().default(false),
     status: text("status").notNull().default("active"),
     displayOrder: integer("display_order").default(0),
