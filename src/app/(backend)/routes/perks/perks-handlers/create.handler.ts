@@ -199,7 +199,7 @@ export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
 
     const [newPerk] = await db
       .insert(perks)
-      .values(insertData as any)
+      .values({ ...(insertData as any), og_image_id: processedBody.ogImageId })
       .returning();
 
     // Fetch the created perk with all relations
