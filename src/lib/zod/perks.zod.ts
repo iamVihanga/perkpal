@@ -117,8 +117,8 @@ export const perkBaseSchema = z.object({
   leadFormSlug: z.string().nullable(),
   leadFormConfig: leadFormConfigSchema.nullable(),
 
-  startDate: z.date(),
-  endDate: z.date(),
+  startDate: z.union([z.date(), z.string().datetime()]).optional().nullable(),
+  endDate: z.union([z.date(), z.string().datetime()]).optional().nullable(),
 
   categoryId: z.string().nullable(),
   subcategoryId: z.string().nullable(),
@@ -189,11 +189,22 @@ export const createPerkSchema = perkBaseSchema
   )
   .refine(
     (data) => {
-      // Validate end date is after start date
-      return data.endDate > data.startDate;
+      // Validate end date is after start date only if both dates are provided
+      if (data.startDate && data.endDate) {
+        const startDate =
+          typeof data.startDate === "string"
+            ? new Date(data.startDate)
+            : data.startDate;
+        const endDate =
+          typeof data.endDate === "string"
+            ? new Date(data.endDate)
+            : data.endDate;
+        return endDate > startDate;
+      }
+      return true;
     },
     {
-      message: "End date must be after start date"
+      message: "End date must be after start date when both dates are provided"
     }
   );
 
@@ -241,12 +252,20 @@ export const updatePerkSchema = perkBaseSchema
     (data) => {
       // Validate end date is after start date if both are provided
       if (data.startDate && data.endDate) {
-        return data.endDate > data.startDate;
+        const startDate =
+          typeof data.startDate === "string"
+            ? new Date(data.startDate)
+            : data.startDate;
+        const endDate =
+          typeof data.endDate === "string"
+            ? new Date(data.endDate)
+            : data.endDate;
+        return endDate > startDate;
       }
       return true;
     },
     {
-      message: "End date must be after start date"
+      message: "End date must be after start date when both dates are provided"
     }
   );
 

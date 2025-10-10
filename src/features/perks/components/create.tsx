@@ -30,7 +30,7 @@ import { ParentCategoryFormSelect } from "@/features/subcategories/components/pa
 import { SubcategoryFormSelect } from "@/features/subcategories/components/subcategory-form-select";
 import { Switch } from "@/components/ui/switch";
 import { Keywords } from "./keywords";
-import { PlusIcon } from "lucide-react";
+import { useCreatePerk } from "../queries/use-create-perk";
 
 type Props = {
   className?: string;
@@ -38,6 +38,7 @@ type Props = {
 
 export function CreatePerk({ className }: Props) {
   const { mutate: saveMedia } = useSaveMedia();
+  const { mutate: createPerk, isPending: creatingPerk } = useCreatePerk();
 
   const form = useForm({
     resolver: zodResolver(createPerkSchema),
@@ -55,8 +56,8 @@ export function CreatePerk({ className }: Props) {
       couponCode: null,
       leadFormSlug: null,
       leadFormConfig: null,
-      startDate: new Date(),
-      endDate: undefined,
+      startDate: null,
+      endDate: null,
       keywords: [],
       categoryId: null,
       subcategoryId: null,
@@ -103,9 +104,18 @@ export function CreatePerk({ className }: Props) {
 
   // Form submit handler
   const onSubmit = (data: CreatePerkT) => {
-    console.log("Form Data: ", data);
-  };
+    console.log("Form Data:", data);
 
+    // Validate with schema on client side for debugging
+    try {
+      const validatedData = createPerkSchema.parse(data);
+      console.log("Client validation passed:", validatedData);
+      createPerk(validatedData);
+    } catch (error) {
+      console.error("Client validation failed:", error);
+      return;
+    }
+  };
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -259,7 +269,7 @@ export function CreatePerk({ className }: Props) {
                         {field.value && (
                           <p
                             className="cursor-pointer underline text-secondary-foreground"
-                            onClick={() => form.setValue("ogImageId", null)}
+                            onClick={() => form.setValue("logo", null)}
                           >
                             Clear Selection
                           </p>
@@ -322,7 +332,7 @@ export function CreatePerk({ className }: Props) {
                         {field.value && (
                           <p
                             className="cursor-pointer underline text-secondary-foreground"
-                            onClick={() => form.setValue("ogImageId", null)}
+                            onClick={() => form.setValue("banner", null)}
                           >
                             Clear Selection
                           </p>
@@ -377,27 +387,27 @@ export function CreatePerk({ className }: Props) {
           {/* Validity Date Selector */}
           <div className="space-y-2">
             <ValidityDateSelector
-              startDate={form.watch("startDate")}
-              endDate={form.watch("endDate")}
-              onStartDateChange={(date) =>
-                form.setValue("startDate", date || new Date())
+              startDate={
+                form.watch("startDate") as Date | string | null | undefined
               }
-              onEndDateChange={(date) => {
-                if (!date) return;
-
-                form.setValue("endDate", date);
-              }}
+              endDate={
+                form.watch("endDate") as Date | string | null | undefined
+              }
+              onStartDateChange={(date) =>
+                form.setValue("startDate", date || null)
+              }
+              onEndDateChange={(date) => form.setValue("endDate", date || null)}
             />
 
             {(form.watch("startDate") || form.watch("endDate")) && (
               <p
                 onClick={() => {
-                  form.setValue("startDate", new Date());
-                  form.setValue("endDate", undefined as unknown as Date);
+                  form.setValue("startDate", null);
+                  form.setValue("endDate", null);
                 }}
                 className="text-xs text-secondary-foreground cursor-pointer hover:underline"
               >
-                Reset Dates
+                Clear Dates
               </p>
             )}
           </div>
@@ -616,7 +626,7 @@ export function CreatePerk({ className }: Props) {
                               },
                               {
                                 onSuccess: (data) =>
-                                  form.setValue("logo", data.id)
+                                  form.setValue("ogImageId", data.id)
                               }
                             );
                           }
@@ -714,8 +724,8 @@ export function CreatePerk({ className }: Props) {
           />
 
           <div className="flex items-center gap-2">
-            <Button type="submit" icon={<PlusIcon />}>
-              Create Perk
+            <Button type="submit" disabled={creatingPerk}>
+              {creatingPerk ? "Creating..." : "Create Perk"}
             </Button>
           </div>
         </div>

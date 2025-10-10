@@ -16,10 +16,25 @@ export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
   try {
     const body = c.req.valid("json");
 
+    // Convert string dates to Date objects if provided
+    let processedBody = {
+      ...body,
+      startDate: body.startDate
+        ? typeof body.startDate === "string"
+          ? new Date(body.startDate)
+          : body.startDate
+        : null,
+      endDate: body.endDate
+        ? typeof body.endDate === "string"
+          ? new Date(body.endDate)
+          : body.endDate
+        : null
+    };
+
     // Generate slug from title if not provided
-    let slug = body.slug;
+    let slug = processedBody.slug;
     if (!slug) {
-      slug = body.title
+      slug = processedBody.title
         .toLowerCase()
         .replace(/[^a-z0-9\s-]/g, "") // Remove special characters
         .replace(/\s+/g, "-") // Replace spaces with hyphens
@@ -42,15 +57,15 @@ export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
     }
 
     // Check if leadFormSlug already exists (if provided)
-    if (body.leadFormSlug) {
+    if (processedBody.leadFormSlug) {
       const existingLeadForm = await db.query.perks.findFirst({
-        where: eq(perks.leadFormSlug, body.leadFormSlug)
+        where: eq(perks.leadFormSlug, processedBody.leadFormSlug)
       });
 
       if (existingLeadForm) {
         return c.json(
           {
-            message: `Lead form slug "${body.leadFormSlug}" already exists`
+            message: `Lead form slug "${processedBody.leadFormSlug}" already exists`
           },
           HttpStatusCodes.BAD_REQUEST
         );
@@ -58,9 +73,9 @@ export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
     }
 
     // Validate category exists if provided
-    if (body.categoryId) {
+    if (processedBody.categoryId) {
       const categoryExists = await db.query.categories.findFirst({
-        where: eq(categories.id, body.categoryId)
+        where: eq(categories.id, processedBody.categoryId)
       });
 
       if (!categoryExists) {
@@ -74,20 +89,20 @@ export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
     }
 
     // Validate subcategory exists and belongs to category if provided
-    if (body.subcategoryId) {
+    if (processedBody.subcategoryId) {
       const subcategoryExists = await db.query.subcategories.findFirst({
-        where: body.categoryId
+        where: processedBody.categoryId
           ? and(
-              eq(subcategories.id, body.subcategoryId),
-              eq(subcategories.categoryId, body.categoryId)
+              eq(subcategories.id, processedBody.subcategoryId),
+              eq(subcategories.categoryId, processedBody.categoryId)
             )
-          : eq(subcategories.id, body.subcategoryId)
+          : eq(subcategories.id, processedBody.subcategoryId)
       });
 
       if (!subcategoryExists) {
         return c.json(
           {
-            message: body.categoryId
+            message: processedBody.categoryId
               ? "Subcategory not found or doesn't belong to the specified category"
               : "Subcategory not found"
           },
@@ -97,9 +112,8 @@ export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
     }
 
     // Validate and transform leadFormConfig if provided
-    let processedBody: any = { ...body };
-    if (body.leadFormConfig) {
-      const leadFormConfig: any = { ...body.leadFormConfig };
+    if (processedBody.leadFormConfig) {
+      const leadFormConfig: any = { ...processedBody.leadFormConfig };
 
       // Handle redirect configuration
       if (leadFormConfig.redirect) {
@@ -157,7 +171,7 @@ export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
       }
 
       processedBody = {
-        ...body,
+        ...processedBody,
         leadFormConfig
       };
     }
@@ -170,13 +184,22 @@ export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
     const nextDisplayOrder = (maxOrderResult[0]?.maxOrder || 0) + 1;
 
     // Insert the new perk
+    const { leadFormConfig, ...bodyWithoutLeadForm } = processedBody;
+
+    const insertData: any = {
+      ...bodyWithoutLeadForm,
+      slug,
+      displayOrder: nextDisplayOrder
+    };
+
+    // Add leadFormConfig if it exists
+    if (leadFormConfig) {
+      insertData.leadFormConfig = leadFormConfig;
+    }
+
     const [newPerk] = await db
       .insert(perks)
-      .values({
-        ...processedBody,
-        slug,
-        displayOrder: nextDisplayOrder
-      })
+      .values(insertData as any)
       .returning();
 
     // Fetch the created perk with all relations
@@ -227,6 +250,8 @@ export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
 
     return c.json(formattedPerk, HttpStatusCodes.CREATED);
   } catch (error) {
+    console.error("Error in create perk handler:", error);
+
     // Handle unique constraint violations
     if (error instanceof Error && error.message.includes("unique constraint")) {
       return c.json(

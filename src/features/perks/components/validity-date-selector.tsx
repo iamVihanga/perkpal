@@ -14,10 +14,10 @@ import {
 } from "@/components/ui/popover";
 
 type Props = {
-  startDate: Date | undefined;
-  endDate: Date | undefined;
-  onStartDateChange: (date: Date | undefined) => void;
-  onEndDateChange: (date: Date | undefined) => void;
+  startDate: Date | string | null | undefined;
+  endDate: Date | string | null | undefined;
+  onStartDateChange: (date: Date | null | undefined) => void;
+  onEndDateChange: (date: Date | null | undefined) => void;
   className?: string;
 };
 
@@ -28,6 +28,20 @@ export function ValidityDateSelector({
   onEndDateChange,
   className
 }: Props) {
+  // Convert string dates to Date objects
+  const startDateObject =
+    startDate && startDate !== null
+      ? typeof startDate === "string"
+        ? new Date(startDate)
+        : startDate
+      : undefined;
+  const endDateObject =
+    endDate && endDate !== null
+      ? typeof endDate === "string"
+        ? new Date(endDate)
+        : endDate
+      : undefined;
+
   return (
     <div className={cn("flex items-center gap-4", className)}>
       {/* Start Date */}
@@ -39,12 +53,12 @@ export function ValidityDateSelector({
               variant="outline"
               className={cn(
                 "w-full justify-start text-left font-normal shadow-none",
-                !startDate && "text-muted-foreground"
+                !startDateObject && "text-muted-foreground"
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {startDate ? (
-                format(startDate, "PPP")
+              {startDateObject ? (
+                format(startDateObject, "PPP")
               ) : (
                 <span>Pick start date</span>
               )}
@@ -53,7 +67,7 @@ export function ValidityDateSelector({
           <PopoverContent className="w-auto p-0" align="start">
             <Calendar
               mode="single"
-              selected={startDate}
+              selected={startDateObject as Date | undefined}
               onSelect={onStartDateChange}
               disabled={(date) => {
                 // Disable past dates
@@ -76,12 +90,12 @@ export function ValidityDateSelector({
               variant="outline"
               className={cn(
                 "w-full justify-start text-left font-normal shadow-none",
-                !endDate && "text-muted-foreground"
+                !endDateObject && "text-muted-foreground"
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {endDate ? (
-                format(endDate, "PPP")
+              {endDateObject ? (
+                format(endDateObject, "PPP")
               ) : (
                 <span>Pick end date (optional)</span>
               )}
@@ -90,12 +104,12 @@ export function ValidityDateSelector({
           <PopoverContent className="w-auto p-0" align="start">
             <Calendar
               mode="single"
-              selected={endDate}
+              selected={endDateObject as Date | undefined}
               onSelect={onEndDateChange}
               disabled={(date) => {
                 // Disable dates before start date
-                if (startDate) {
-                  return date < startDate;
+                if (startDateObject) {
+                  return date < startDateObject;
                 }
                 // Disable past dates if no start date
                 const today = new Date();
