@@ -6,6 +6,8 @@ import * as routes from "./routes";
 const router = createRouter()
   .openapi(routes.list, handlers.list)
   .openapi(routes.getOne, handlers.getOne)
-  .openapi(routes.create, handlers.create);
+  .openapi(routes.create, handlers.create)
+  .openapi(routes.reorder, handlers.reorder)
+  .openapi(routes.remove, handlers.remove);
 
 export default router;
