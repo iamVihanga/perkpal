@@ -2,6 +2,7 @@
 import { and, eq, sql } from "drizzle-orm";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import * as HttpStatusPhrases from "stoker/http-status-phrases";
+import slug from "slug";
 
 import type { AppRouteHandler } from "@/lib/types/server";
 
@@ -14,6 +15,26 @@ import type { CreatePerkRouteT } from "../routes";
 // Create perk route handler
 export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
   try {
+    const session = c.get("session");
+    const user = c.get("user");
+
+    if (!session || !user) {
+      return c.json(
+        { message: HttpStatusPhrases.UNAUTHORIZED },
+        HttpStatusCodes.UNAUTHORIZED
+      );
+    }
+
+    //   Check user role
+    if (user.role !== "admin") {
+      if (user.role !== "contentEditor") {
+        return c.json(
+          { message: HttpStatusPhrases.FORBIDDEN },
+          HttpStatusCodes.FORBIDDEN
+        );
+      }
+    }
+
     const body = c.req.valid("json");
 
     // Convert string dates to Date objects if provided
@@ -32,25 +53,20 @@ export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
     };
 
     // Generate slug from title if not provided
-    let slug = processedBody.slug;
-    if (!slug) {
-      slug = processedBody.title
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, "") // Remove special characters
-        .replace(/\s+/g, "-") // Replace spaces with hyphens
-        .replace(/-+/g, "-") // Replace multiple hyphens with single
-        .trim();
+    let bodySlug = processedBody.slug;
+    if (!bodySlug) {
+      bodySlug = slug(processedBody.title);
     }
 
     // Check if slug already exists
     const existingPerk = await db.query.perks.findFirst({
-      where: eq(perks.slug, slug)
+      where: eq(perks.slug, bodySlug)
     });
 
     if (existingPerk) {
       return c.json(
         {
-          message: `Perk with slug "${slug}" already exists`
+          message: `Perk with slug "${bodySlug}" already exists`
         },
         HttpStatusCodes.BAD_REQUEST
       );
