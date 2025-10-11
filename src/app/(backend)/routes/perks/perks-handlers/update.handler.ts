@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { and, eq, sql } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import * as HttpStatusPhrases from "stoker/http-status-phrases";
 import slug from "slug";
@@ -10,10 +9,11 @@ import { db } from "@/database";
 import { perks } from "@/database/schema/perks.schema";
 import { categories, subcategories } from "@/database/schema/categories.schema";
 import { SelectPerkT } from "@/lib/zod/perks.zod";
-import type { CreatePerkRouteT } from "../routes";
+import type { FormFieldConfigT } from "@/lib/helpers";
 
-// Create perk route handler
-export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
+import type { UpdatePerkRouteT } from "../routes";
+
+export const update: AppRouteHandler<UpdatePerkRouteT> = async (c) => {
   try {
     const session = c.get("session");
     const user = c.get("user");
@@ -25,7 +25,7 @@ export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
       );
     }
 
-    //   Check user role
+    // Check user role
     if (user.role !== "admin") {
       if (user.role !== "contentEditor") {
         return c.json(
@@ -35,10 +35,25 @@ export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
       }
     }
 
+    const { id } = c.req.param();
     const body = c.req.valid("json");
 
+    // Find existing perk
+    const existingPerk = await db.query.perks.findFirst({
+      where: (fields, { eq }) => eq(fields.id, id)
+    });
+
+    if (!existingPerk) {
+      return c.json(
+        {
+          message: "Perk not found"
+        },
+        HttpStatusCodes.NOT_FOUND
+      );
+    }
+
     // Convert string dates to Date objects if provided
-    let processedBody = {
+    const processedBody = {
       ...body,
       startDate: body.startDate
         ? typeof body.startDate === "string"
@@ -54,26 +69,31 @@ export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
 
     // Generate slug from title if not provided
     let bodySlug = processedBody.slug;
-    if (!bodySlug) {
+    if (!bodySlug && processedBody.title) {
       bodySlug = slug(processedBody.title);
     }
 
-    // Check if slug already exists
-    const existingPerk = await db.query.perks.findFirst({
-      where: eq(perks.slug, bodySlug)
-    });
+    // Check if slug already exists (excluding current perk)
+    if (bodySlug && bodySlug !== existingPerk.slug) {
+      const slugExisting = await db.query.perks.findFirst({
+        where: eq(perks.slug, bodySlug)
+      });
 
-    if (existingPerk) {
-      return c.json(
-        {
-          message: `Perk with slug "${bodySlug}" already exists`
-        },
-        HttpStatusCodes.BAD_REQUEST
-      );
+      if (slugExisting) {
+        return c.json(
+          {
+            message: `Perk with slug "${bodySlug}" already exists`
+          },
+          HttpStatusCodes.BAD_REQUEST
+        );
+      }
     }
 
-    // Check if leadFormSlug already exists (if provided)
-    if (processedBody.leadFormSlug) {
+    // Check if leadFormSlug already exists (if provided and different from current)
+    if (
+      processedBody.leadFormSlug &&
+      processedBody.leadFormSlug !== existingPerk.leadFormSlug
+    ) {
       const existingLeadForm = await db.query.perks.findFirst({
         where: eq(perks.leadFormSlug, processedBody.leadFormSlug)
       });
@@ -128,8 +148,9 @@ export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
     }
 
     // Validate and transform leadFormConfig if provided
+    let validatedLeadFormConfig: FormFieldConfigT | null = null;
     if (processedBody.leadFormConfig) {
-      const leadFormConfig: any = { ...processedBody.leadFormConfig };
+      const leadFormConfig = { ...processedBody.leadFormConfig };
 
       // Handle redirect configuration
       if (leadFormConfig.redirect) {
@@ -145,12 +166,11 @@ export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
               HttpStatusCodes.BAD_REQUEST
             );
           }
-
-          // Create properly typed redirect config
+          // Ensure the redirect config matches FormFieldConfigT
           leadFormConfig.redirect = {
             enabled: true,
-            url: redirect.url as string, // Type assertion after validation
-            delay: redirect.delay
+            url: redirect.url,
+            delay: redirect.delay || 3000
           };
         } else {
           // If redirect is disabled, remove it entirely
@@ -173,12 +193,11 @@ export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
               HttpStatusCodes.BAD_REQUEST
             );
           }
-
-          // Create properly typed notification config
+          // Ensure the notification config matches FormFieldConfigT
           leadFormConfig.notification = {
             enabled: true,
-            partnerEmail: notification.partnerEmail as string, // Type assertion after validation
-            sendImmediately: notification.sendImmediately
+            partnerEmail: notification.partnerEmail,
+            sendImmediately: notification.sendImmediately || true
           };
         } else {
           // If notification is disabled, remove it entirely
@@ -186,41 +205,33 @@ export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
         }
       }
 
-      processedBody = {
-        ...processedBody,
-        leadFormConfig
-      };
+      validatedLeadFormConfig = leadFormConfig as FormFieldConfigT;
     }
 
-    // Get the highest display order for new perk positioning
-    const maxOrderResult = await db
-      .select({ maxOrder: sql<number>`max(${perks.displayOrder})` })
-      .from(perks);
+    // Prepare update data without leadFormConfig first
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { leadFormConfig: _, ...bodyWithoutLeadForm } = processedBody;
 
-    const nextDisplayOrder = (maxOrderResult[0]?.maxOrder || 0) + 1;
-
-    // Insert the new perk
-    const { leadFormConfig, ...bodyWithoutLeadForm } = processedBody;
-
-    const insertData: any = {
+    const updateData = {
       ...bodyWithoutLeadForm,
-      slug,
-      displayOrder: nextDisplayOrder
+      ...(validatedLeadFormConfig && {
+        leadFormConfig: validatedLeadFormConfig
+      }),
+      updatedAt: new Date(),
+      og_image_id: bodyWithoutLeadForm.ogImageId
     };
 
-    // Add leadFormConfig if it exists
-    if (leadFormConfig) {
-      insertData.leadFormConfig = leadFormConfig;
+    // Update slug if provided
+    if (bodySlug) {
+      updateData.slug = bodySlug;
     }
 
-    const [newPerk] = await db
-      .insert(perks)
-      .values({ ...(insertData as any), og_image_id: processedBody.ogImageId })
-      .returning();
+    // Update the perk
+    await db.update(perks).set(updateData).where(eq(perks.id, id));
 
-    // Fetch the created perk with all relations
-    const createdPerk = await db.query.perks.findFirst({
-      where: eq(perks.id, newPerk.id),
+    // Fetch the updated perk with all relations
+    const updatedPerkWithRelations = await db.query.perks.findFirst({
+      where: eq(perks.id, id),
       with: {
         category: {
           with: {
@@ -238,10 +249,10 @@ export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
       }
     });
 
-    if (!createdPerk) {
+    if (!updatedPerkWithRelations) {
       return c.json(
         {
-          message: "Failed to retrieve created perk"
+          message: "Failed to retrieve updated perk"
         },
         HttpStatusCodes.INTERNAL_SERVER_ERROR
       );
@@ -249,35 +260,23 @@ export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
 
     // Format the response to match SelectPerkT schema
     const formattedPerk = {
-      ...createdPerk,
-      category: createdPerk.category
+      ...updatedPerkWithRelations,
+      category: updatedPerkWithRelations.category
         ? {
-            ...createdPerk.category,
-            ogImageId: createdPerk.category.og_image_id
+            ...updatedPerkWithRelations.category,
+            ogImageId: updatedPerkWithRelations.category.og_image_id
           }
         : undefined,
-      subcategory: createdPerk.subcategory
+      subcategory: updatedPerkWithRelations.subcategory
         ? {
-            ...createdPerk.subcategory,
-            ogImageId: createdPerk.subcategory.og_image_id
+            ...updatedPerkWithRelations.subcategory,
+            ogImageId: updatedPerkWithRelations.subcategory.og_image_id
           }
         : undefined
     } as SelectPerkT;
 
-    return c.json(formattedPerk, HttpStatusCodes.CREATED);
+    return c.json(formattedPerk, HttpStatusCodes.OK);
   } catch (error) {
-    console.error("Error in create perk handler:", error);
-
-    // Handle unique constraint violations
-    if (error instanceof Error && error.message.includes("unique constraint")) {
-      return c.json(
-        {
-          message: "A perk with this slug or lead form slug already exists"
-        },
-        HttpStatusCodes.BAD_REQUEST
-      );
-    }
-
     return c.json(
       {
         message:

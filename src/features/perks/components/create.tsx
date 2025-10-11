@@ -687,41 +687,63 @@ export function CreatePerk({ className }: Props) {
         </div>
 
         <div className="bg-secondary/40 border border-secondary rounded-md mt-8 p-4 flex items-center justify-between">
-          <FormField
-            control={form.control}
-            name="status"
-            render={({ field }) => (
-              <FormItem className="flex-1">
-                <FormControl>
-                  <div className="flex items-center gap-3">
-                    <Switch
-                      checked={field.value === "active" ? true : false}
-                      onCheckedChange={(val) => {
-                        if (val === true) {
-                          field.onChange("active");
-                        } else {
-                          field.onChange("inactive");
-                        }
-                      }}
-                    />
+          <div className="flex flex-1 items-center gap-6">
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <div className="flex items-center gap-3">
+                      <Switch
+                        checked={field.value === "active" ? true : false}
+                        onCheckedChange={(val) => {
+                          if (val === true) {
+                            field.onChange("active");
+                          } else {
+                            field.onChange("inactive");
+                          }
+                        }}
+                      />
 
-                    <FormLabel>
-                      Status -{" "}
-                      <span
-                        className={cn("", {
-                          "text-primary": field.value === "active",
-                          "text-red-600": field.value === "inactive"
-                        })}
-                      >
-                        {field.value === "active" ? "Active" : "Inactive"}
-                      </span>
-                    </FormLabel>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                      <FormLabel>
+                        Status -{" "}
+                        <span
+                          className={cn("", {
+                            "text-primary": field.value === "active",
+                            "text-red-600": field.value === "inactive"
+                          })}
+                        >
+                          {field.value === "active" ? "Active" : "Inactive"}
+                        </span>
+                      </FormLabel>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="isFeatured"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <div className="flex items-center gap-3">
+                      <FormLabel>Is Feature</FormLabel>
+
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
           <div className="flex items-center gap-2">
             <Button type="submit" disabled={creatingPerk}>
