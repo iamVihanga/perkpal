@@ -6,12 +6,14 @@ import { Separator } from "@/components/ui/separator";
 import { UpdatePerk } from "@/features/perks/components/update";
 
 interface UpdatePerkPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default function UpdatePerkPage({ params }: UpdatePerkPageProps) {
+export default async function UpdatePerkPage({ params }: UpdatePerkPageProps) {
+  const { id } = await params;
+
   return (
     <PageContainer scrollable={false}>
       <div className="bg-secondary/30 border border-secondary p-6 rounded-lg flex flex-1 flex-col space-y-4 max-w-2xl mx-auto w-full">
@@ -23,7 +25,7 @@ export default function UpdatePerkPage({ params }: UpdatePerkPageProps) {
 
         <Separator />
 
-        <UpdatePerk perkId={params.id} />
+        <UpdatePerk perkId={id} />
       </div>
     </PageContainer>
   );
