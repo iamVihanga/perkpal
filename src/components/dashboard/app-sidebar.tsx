@@ -8,7 +8,6 @@ import {
   IconBrowser,
   IconNews,
   IconUsersGroup,
-  IconLink,
   IconUserCog
 } from "@tabler/icons-react";
 
@@ -61,14 +60,9 @@ const data = {
       ]
     },
     {
-      title: "All Leads",
+      title: "Manage Leads",
       url: "/dashboard/leads",
       icon: IconUsersGroup
-    },
-    {
-      title: "Partner Requests",
-      url: "/dashboard/partner-requests",
-      icon: IconLink
     }
   ],
   navFrontend: [

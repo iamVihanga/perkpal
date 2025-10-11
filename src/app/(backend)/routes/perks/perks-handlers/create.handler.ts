@@ -2,7 +2,7 @@
 import { and, eq, sql } from "drizzle-orm";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import * as HttpStatusPhrases from "stoker/http-status-phrases";
-import slug from "slug";
+import slugify from "slug";
 
 import type { AppRouteHandler } from "@/lib/types/server";
 
@@ -55,7 +55,7 @@ export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
     // Generate slug from title if not provided
     let bodySlug = processedBody.slug;
     if (!bodySlug) {
-      bodySlug = slug(processedBody.title);
+      bodySlug = slugify(processedBody.title);
     }
 
     // Check if slug already exists
@@ -204,7 +204,7 @@ export const create: AppRouteHandler<CreatePerkRouteT> = async (c) => {
 
     const insertData: any = {
       ...bodyWithoutLeadForm,
-      slug,
+      slug: bodySlug,
       displayOrder: nextDisplayOrder
     };
 
