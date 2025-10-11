@@ -119,6 +119,9 @@ export function UpdatePerk({ perkId, className }: UpdatePerkProps) {
     }
   }, [existingPerk, form]);
 
+  // Watch redemption method for reactive updates
+  const redemptionMethod = form.watch("redemptionMethod");
+
   // Update slug listener
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
@@ -548,6 +551,70 @@ export function UpdatePerk({ perkId, className }: UpdatePerkProps) {
           />
         </div>
 
+        {/* Redemption values */}
+        {redemptionMethod === "affiliate_link" && (
+          <FormField
+            control={form.control}
+            name="affiliateLink"
+            render={({ field }) => (
+              <FormItem className="flex-1 space-y-1">
+                <FormLabel>Affiliate Link</FormLabel>
+                <FormControl>
+                  <Input
+                    className="shadow-none"
+                    placeholder="Enter affiliate link"
+                    {...field}
+                    value={field.value || ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
+        {redemptionMethod === "coupon_code" && (
+          <FormField
+            control={form.control}
+            name="couponCode"
+            render={({ field }) => (
+              <FormItem className="flex-1 space-y-1">
+                <FormLabel>Coupon Code</FormLabel>
+                <FormControl>
+                  <Input
+                    className="shadow-none"
+                    placeholder="Enter coupon code"
+                    {...field}
+                    value={field.value || ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
+        {redemptionMethod === "form_submission" && (
+          <FormField
+            control={form.control}
+            name="leadFormConfig"
+            render={({ field }) => (
+              <FormItem className="flex-1 space-y-1">
+                <FormLabel>Lead form configuration</FormLabel>
+                <FormControl>
+                  <Button
+                    variant={"secondary"}
+                    onClick={() => console.log(field)}
+                  >
+                    Config
+                  </Button>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
         <Separator />
 
         {/* Validity Dates */}
@@ -587,16 +654,10 @@ export function UpdatePerk({ perkId, className }: UpdatePerkProps) {
               control={form.control}
               name="categoryId"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <FormControl>
-                    <ParentCategoryFormSelect
-                      value={field.value || undefined}
-                      onValueChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+                <ParentCategoryFormSelect
+                  value={field.value || undefined}
+                  onValueChange={field.onChange}
+                />
               )}
             />
 
@@ -604,17 +665,11 @@ export function UpdatePerk({ perkId, className }: UpdatePerkProps) {
               control={form.control}
               name="subcategoryId"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Subcategory</FormLabel>
-                  <FormControl>
-                    <SubcategoryFormSelect
-                      categoryId={categoryId || undefined}
-                      value={field.value || undefined}
-                      onValueChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+                <SubcategoryFormSelect
+                  categoryId={categoryId || undefined}
+                  value={field.value || undefined}
+                  onValueChange={field.onChange}
+                />
               )}
             />
           </div>

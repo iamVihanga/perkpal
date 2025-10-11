@@ -1,10 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useId } from "react";
 
 import { getClient } from "@/lib/rpc/client";
 import type { UpdatePerkT } from "@/lib/zod/perks.zod";
 
 export const useUpdatePerk = (perkId: string) => {
+  const toastId = useId();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -26,8 +28,13 @@ export const useUpdatePerk = (perkId: string) => {
       const result = await response.json();
       return result;
     },
+    onMutate: () => {
+      toast.loading("Updating perk...", {
+        id: toastId
+      });
+    },
     onSuccess: (data) => {
-      toast.success("Perk updated successfully");
+      toast.success("Perk updated successfully", { id: toastId });
 
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: ["perks"] });
@@ -40,7 +47,7 @@ export const useUpdatePerk = (perkId: string) => {
       queryClient.setQueryData(["perks", { id: perkId }], data);
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update perk: ${error.message}`);
+      toast.error(`Failed to update perk: ${error.message}`, { id: toastId });
     }
   });
 
