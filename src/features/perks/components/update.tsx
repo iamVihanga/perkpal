@@ -3,16 +3,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import slug from "slug";
+import slugify from "slug";
 
 import { cn } from "@/lib/utils";
 import { updatePerkSchema, UpdatePerkT } from "@/lib/zod/perks.zod";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -36,6 +37,7 @@ import { Keywords } from "./keywords";
 import { useUpdatePerk } from "../queries/use-update-perk";
 import { useGetOnePerk } from "../queries/use-get-one-perk";
 import { Skeleton } from "@/components/ui/skeleton";
+import { LeadFormConfigure } from "./lead-form-configure";
 
 interface UpdatePerkProps {
   perkId: string;
@@ -46,6 +48,7 @@ export function UpdatePerk({ perkId, className }: UpdatePerkProps) {
   const router = useRouter();
   const { mutate: saveMedia } = useSaveMedia();
   const { mutate: updatePerk, isPending: updatingPerk } = useUpdatePerk(perkId);
+  const [plainLeadFormSlug, setPlainLeadFormSlug] = useState<string>("");
 
   // Fetch existing perk data
   const {
@@ -84,7 +87,8 @@ export function UpdatePerk({ perkId, className }: UpdatePerkProps) {
     }
   });
 
-  // Watch category for reactive updates
+  // Watch category and redemption method for reactive updates
+  const redemptionMethod = form.watch("redemptionMethod");
   const categoryId = form.watch("categoryId");
 
   // Populate form with existing data
@@ -116,11 +120,18 @@ export function UpdatePerk({ perkId, className }: UpdatePerkProps) {
         ogImageId: existingPerk.opengraphImage?.id || null,
         canonicalUrl: existingPerk.canonicalUrl || null
       });
+
+      // Initialize plainLeadFormSlug if leadFormSlug exists
+      if (existingPerk.leadFormSlug) {
+        // Convert slug back to readable form (remove hyphens, capitalize)
+        const readableSlug = existingPerk.leadFormSlug
+          .split("-")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ");
+        setPlainLeadFormSlug(readableSlug);
+      }
     }
   }, [existingPerk, form]);
-
-  // Watch redemption method for reactive updates
-  const redemptionMethod = form.watch("redemptionMethod");
 
   // Update slug listener
   useEffect(() => {
@@ -131,12 +142,29 @@ export function UpdatePerk({ perkId, className }: UpdatePerkProps) {
           return;
         }
 
-        form.setValue("slug", slug(value.title));
+        form.setValue("slug", slugify(value.title));
       }
     });
 
     return () => subscription.unsubscribe();
   }, [form]);
+
+  // Update lead form slug
+  useEffect(() => {
+    if (plainLeadFormSlug !== "") {
+      const generatedSlug = slugify(plainLeadFormSlug);
+      form.setValue("leadFormSlug", generatedSlug);
+    } else if (redemptionMethod === "form_submission" && form.watch("title")) {
+      // Auto-generate leadFormSlug from title when redemption method is form_submission
+      const title = form.watch("title");
+      if (title) {
+        const titleSlug = slugify(title);
+        const leadFormSlug = `${titleSlug}-lead-form`;
+        form.setValue("leadFormSlug", leadFormSlug);
+        setPlainLeadFormSlug(`${title} Lead Form`);
+      }
+    }
+  }, [form, plainLeadFormSlug, redemptionMethod]);
 
   // Clear subcategory when category changes
   useEffect(() => {
@@ -145,18 +173,50 @@ export function UpdatePerk({ perkId, className }: UpdatePerkProps) {
         // Clear subcategory when category changes
         form.setValue("subcategoryId", null);
       }
+      if (name === "redemptionMethod") {
+        // Clear lead form fields when redemption method changes away from form_submission
+        if (value.redemptionMethod !== "form_submission") {
+          form.setValue("leadFormSlug", null);
+          form.setValue("leadFormConfig", null);
+          setPlainLeadFormSlug("");
+        }
+      }
     });
 
     return () => subscription.unsubscribe();
   }, [form]);
 
-  const onSubmit = (values: UpdatePerkT) => {
-    updatePerk(values, {
+  const onSubmit = (data: UpdatePerkT) => {
+    console.log("Form data before validation:", data);
+
+    // Additional client-side validation for form_submission redemption method
+    if (data.redemptionMethod === "form_submission") {
+      if (!data.leadFormSlug) {
+        form.setError("leadFormSlug", {
+          type: "manual",
+          message:
+            "Lead form slug is required for form submission redemption method"
+        });
+        return;
+      }
+      if (!data.leadFormConfig) {
+        form.setError("leadFormConfig", {
+          type: "manual",
+          message:
+            "Lead form configuration is required for form submission redemption method"
+        });
+        return;
+      }
+    }
+
+    updatePerk(data, {
       onSuccess: () => {
         router.push("/dashboard/perks");
       }
     });
   };
+
+  console.log(form.formState.errors);
 
   // Loading state
   if (fetchingPerk) {
@@ -474,31 +534,38 @@ export function UpdatePerk({ perkId, className }: UpdatePerkProps) {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-6">
+            {/* Location */}
             <FormField
               control={form.control}
               name="location"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex-1 space-y-2">
                   <FormLabel>Location</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
-                      value={field.value}
-                      className="flex flex-col space-y-2"
+                      defaultValue={field.value}
+                      className="flex items-center gap-6"
                     >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Malaysia" id="malaysia" />
-                        <FormLabel htmlFor="malaysia">Malaysia</FormLabel>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Singapore" id="singapore" />
-                        <FormLabel htmlFor="singapore">Singapore</FormLabel>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Global" id="global" />
-                        <FormLabel htmlFor="global">Global</FormLabel>
-                      </div>
+                      <FormItem className="flex items-center gap-3">
+                        <FormControl>
+                          <RadioGroupItem value="Global" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Global</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center gap-3">
+                        <FormControl>
+                          <RadioGroupItem value="Malaysia" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Malaysia</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center gap-3">
+                        <FormControl>
+                          <RadioGroupItem value="Singapore" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Singapore</FormLabel>
+                      </FormItem>
                     </RadioGroup>
                   </FormControl>
                   <FormMessage />
@@ -506,26 +573,65 @@ export function UpdatePerk({ perkId, className }: UpdatePerkProps) {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="isFeatured"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base">Featured Perk</FormLabel>
-                    <div className="text-sm text-muted-foreground">
-                      Mark this perk as featured
+            <div className="space-y-3">
+              <FormField
+                control={form.control}
+                name="isFeatured"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-sm">Featured Perk</FormLabel>
+                      <div className="text-xs text-muted-foreground">
+                        Mark this perk as featured
+                      </div>
                     </div>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-sm">
+                        Perk Status
+                        <span
+                          className={cn("text-xs", {
+                            "text-green-500": field.value === "active",
+                            "text-red-500": field.value === "inactive"
+                          })}
+                        >
+                          ({field.value === "active" ? "Active" : "Inactive"})
+                        </span>
+                      </FormLabel>
+                      <div className="text-xs text-muted-foreground">
+                        Switch your perk between Active or Inactive
+                      </div>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value === "active" ? true : false}
+                        onCheckedChange={(val) => {
+                          if (val === true) {
+                            field.onChange("active");
+                          } else {
+                            field.onChange("inactive");
+                          }
+                        }}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
         </div>
 
@@ -595,24 +701,56 @@ export function UpdatePerk({ perkId, className }: UpdatePerkProps) {
         )}
 
         {redemptionMethod === "form_submission" && (
-          <FormField
-            control={form.control}
-            name="leadFormConfig"
-            render={({ field }) => (
-              <FormItem className="flex-1 space-y-1">
-                <FormLabel>Lead form configuration</FormLabel>
-                <FormControl>
-                  <Button
-                    variant={"secondary"}
-                    onClick={() => console.log(field)}
-                  >
-                    Config
-                  </Button>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <>
+            <FormField
+              control={form.control}
+              name="leadFormSlug"
+              render={({ field }) => (
+                <FormItem className="flex-1 space-y-1">
+                  <FormLabel>Lead Form Slug *</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="shadow-none"
+                      placeholder="Enter lead form name (e.g., My Perk Lead Form)"
+                      value={plainLeadFormSlug}
+                      onChange={(e) => setPlainLeadFormSlug(e.target.value)}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    {field.value
+                      ? `Generated Slug: ${field.value}`
+                      : "A slug will be auto-generated from the perk title if left empty"}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="leadFormConfig"
+              render={({ field }) => (
+                <FormItem className="p-4 border border-input bg-card rounded-md w-full flex items-center justify-between flex-1">
+                  <div className="space-y-1 h-full">
+                    <FormLabel className="text-sm">
+                      Lead Form Configuration
+                    </FormLabel>
+                    <p className="text-xs text-secondary-foreground">
+                      Configure the lead form settings
+                    </p>
+                  </div>
+
+                  <FormControl>
+                    <LeadFormConfigure
+                      value={field.value as any}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </>
         )}
 
         <Separator />
@@ -834,7 +972,7 @@ export function UpdatePerk({ perkId, className }: UpdatePerkProps) {
             variant="outline"
             onClick={() => router.push("/dashboard/perks")}
           >
-            Cancel
+            Go Back
           </Button>
           <Button type="submit" loading={updatingPerk} disabled={updatingPerk}>
             Update Perk

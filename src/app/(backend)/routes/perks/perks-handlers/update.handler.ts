@@ -1,7 +1,7 @@
 import { eq, and } from "drizzle-orm";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import * as HttpStatusPhrases from "stoker/http-status-phrases";
-import slug from "slug";
+import slugify from "slug";
 
 import type { AppRouteHandler } from "@/lib/types/server";
 
@@ -70,7 +70,7 @@ export const update: AppRouteHandler<UpdatePerkRouteT> = async (c) => {
     // Generate slug from title if not provided
     let bodySlug = processedBody.slug;
     if (!bodySlug && processedBody.title) {
-      bodySlug = slug(processedBody.title);
+      bodySlug = slugify(processedBody.title);
     }
 
     // Check if slug already exists (excluding current perk)

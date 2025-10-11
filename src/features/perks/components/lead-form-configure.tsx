@@ -152,6 +152,13 @@ export function LeadFormConfigure({ value, onChange }: Props) {
         label: "Email Address",
         placeholder: "Enter your email",
         required: true
+      },
+      {
+        id: crypto.randomUUID(),
+        type: "tel",
+        label: "Phone Number",
+        placeholder: "Enter your phone number",
+        required: false
       }
     ],
     thankYou: {
