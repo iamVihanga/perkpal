@@ -174,37 +174,19 @@ export const createPerkSchema = perkBaseSchema
       if (data.redemptionMethod === "coupon_code" && !data.couponCode) {
         return false;
       }
+
       if (
         data.redemptionMethod === "form_submission" &&
         (!data.leadFormSlug || !data.leadFormConfig)
       ) {
         return false;
       }
+
       return true;
     },
     {
       message:
         "Required redemption fields must be provided based on redemption method"
-    }
-  )
-  .refine(
-    (data) => {
-      // Validate end date is after start date only if both dates are provided
-      if (data.startDate && data.endDate) {
-        const startDate =
-          typeof data.startDate === "string"
-            ? new Date(data.startDate)
-            : data.startDate;
-        const endDate =
-          typeof data.endDate === "string"
-            ? new Date(data.endDate)
-            : data.endDate;
-        return endDate > startDate;
-      }
-      return true;
-    },
-    {
-      message: "End date must be after start date when both dates are provided"
     }
   );
 

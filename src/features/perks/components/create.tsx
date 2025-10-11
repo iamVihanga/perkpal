@@ -1,15 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import slug from "slug";
+import slugify from "slug";
 
 import { cn } from "@/lib/utils";
 import { createPerkSchema, CreatePerkT } from "@/lib/zod/perks.zod";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -31,6 +33,7 @@ import { SubcategoryFormSelect } from "@/features/subcategories/components/subca
 import { Switch } from "@/components/ui/switch";
 import { Keywords } from "./keywords";
 import { useCreatePerk } from "../queries/use-create-perk";
+import { LeadFormConfigure } from "./lead-form-configure";
 
 type Props = {
   className?: string;
@@ -39,6 +42,7 @@ type Props = {
 export function CreatePerk({ className }: Props) {
   const { mutate: saveMedia } = useSaveMedia();
   const { mutate: createPerk, isPending: creatingPerk } = useCreatePerk();
+  const [plainLeadFormSlug, setPlainLeadFormSlug] = useState<string>("");
 
   const form = useForm({
     resolver: zodResolver(createPerkSchema),
@@ -83,12 +87,26 @@ export function CreatePerk({ className }: Props) {
           return;
         }
 
-        form.setValue("slug", slug(value.title));
+        form.setValue("slug", slugify(value.title));
       }
     });
 
     return () => subscription.unsubscribe();
   }, [form]);
+
+  // Update lead form slug
+  useEffect(() => {
+    if (plainLeadFormSlug !== "") {
+      const generatedSlug = slugify(plainLeadFormSlug);
+      form.setValue("leadFormSlug", generatedSlug);
+    } else if (redemptionMethod === "form_submission" && form.watch("title")) {
+      // Auto-generate leadFormSlug from title when redemption method is form_submission
+      const titleSlug = slugify(form.watch("title"));
+      const leadFormSlug = `${titleSlug}-lead-form`;
+      form.setValue("leadFormSlug", leadFormSlug);
+      setPlainLeadFormSlug(`${form.watch("title")} Lead Form`);
+    }
+  }, [form, plainLeadFormSlug, redemptionMethod]);
 
   // Clear subcategory when category changes
   useEffect(() => {
@@ -97,6 +115,14 @@ export function CreatePerk({ className }: Props) {
         // Clear subcategory when category changes
         form.setValue("subcategoryId", null);
       }
+      if (name === "redemptionMethod") {
+        // Clear lead form fields when redemption method changes away from form_submission
+        if (value.redemptionMethod !== "form_submission") {
+          form.setValue("leadFormSlug", null);
+          form.setValue("leadFormConfig", null);
+          setPlainLeadFormSlug("");
+        }
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -104,18 +130,51 @@ export function CreatePerk({ className }: Props) {
 
   // Form submit handler
   const onSubmit = (data: CreatePerkT) => {
-    console.log("Form Data:", data);
+    console.log("Form data before validation:", data);
 
-    // Validate with schema on client side for debugging
+    // Additional client-side validation for form_submission redemption method
+    if (data.redemptionMethod === "form_submission") {
+      if (!data.leadFormSlug) {
+        form.setError("leadFormSlug", {
+          type: "manual",
+          message:
+            "Lead form slug is required for form submission redemption method"
+        });
+        return;
+      }
+      if (!data.leadFormConfig) {
+        form.setError("leadFormConfig", {
+          type: "manual",
+          message:
+            "Lead form configuration is required for form submission redemption method"
+        });
+        return;
+      }
+    }
+
     try {
       const validatedData = createPerkSchema.parse(data);
-      console.log("Client validation passed:", validatedData);
       createPerk(validatedData);
     } catch (error) {
       console.error("Client validation failed:", error);
+      // Handle Zod validation errors
+      if (error instanceof Error && "issues" in error) {
+        const zodError = error as any;
+        zodError.issues?.forEach((issue: any) => {
+          if (issue.path && issue.path.length > 0) {
+            form.setError(issue.path.join(".") as any, {
+              type: "manual",
+              message: issue.message
+            });
+          }
+        });
+      }
       return;
     }
   };
+
+  console.log(form.formState.errors);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -510,24 +569,56 @@ export function CreatePerk({ className }: Props) {
           )}
 
           {redemptionMethod === "form_submission" && (
-            <FormField
-              control={form.control}
-              name="leadFormConfig"
-              render={({ field }) => (
-                <FormItem className="flex-1 space-y-1">
-                  <FormLabel>Lead form configuration</FormLabel>
-                  <FormControl>
-                    <Button
-                      variant={"secondary"}
-                      onClick={() => console.log(field)}
-                    >
-                      Config
-                    </Button>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <>
+              <FormField
+                control={form.control}
+                name="leadFormSlug"
+                render={({ field }) => (
+                  <FormItem className="flex-1 space-y-1">
+                    <FormLabel>Lead Form Slug *</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="shadow-none"
+                        placeholder="Enter lead form name (e.g., My Perk Lead Form)"
+                        value={plainLeadFormSlug}
+                        onChange={(e) => setPlainLeadFormSlug(e.target.value)}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {field.value
+                        ? `Generated Slug: ${field.value}`
+                        : "A slug will be auto-generated from the perk title if left empty"}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="leadFormConfig"
+                render={({ field }) => (
+                  <FormItem className="p-4 border border-input bg-card rounded-md w-full flex items-center justify-between flex-1">
+                    <div className="space-y-1 h-full">
+                      <FormLabel className="text-sm">
+                        Lead Form Configuration
+                      </FormLabel>
+                      <p className="text-xs text-secondary-foreground">
+                        Configure the lead form settings
+                      </p>
+                    </div>
+
+                    <FormControl>
+                      <LeadFormConfigure
+                        value={field.value as any}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </>
           )}
 
           <div className="space-y-2 mt-4">
