@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import slug from "slug";
-import { ImageIcon, Loader2, User, Upload, Eye } from "lucide-react";
+import { ImageIcon, User, Upload, Eye } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -224,14 +224,7 @@ export function CreatePost({ className }: Props) {
                     loading={creatingPost}
                     className="flex-1"
                   >
-                    {creatingPost ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Creating...
-                      </>
-                    ) : (
-                      "Create Post"
-                    )}
+                    Create Post
                   </Button>
                   <Button
                     type="button"
@@ -275,27 +268,25 @@ export function CreatePost({ className }: Props) {
                 ) : (
                   <MediaUploadWidget
                     widgetProps={{
-                      onSuccess: (result: unknown) => {
-                        const {
-                          public_id,
-                          secure_url,
-                          original_filename,
-                          bytes
-                        } = (result as any).info;
+                      onSuccess: ({ info }, widget) => {
+                        widget.close();
+
+                        if (typeof info === "string") return;
+
                         saveMedia(
                           {
-                            publicId: public_id,
-                            url: secure_url,
-                            filename: original_filename,
-                            size: bytes,
-                            seoTitle: null,
-                            seoDescription: null,
-                            seoKeywords: null
+                            url: info?.url || null,
+                            filename: info?.original_filename || "",
+                            publicId: info?.public_id || null,
+                            size: info?.bytes || 0,
+                            seoDescription:
+                              form.getValues("seoDescription") || "",
+                            seoTitle: form.getValues("seoTitle") || "",
+                            seoKeywords: ""
                           },
                           {
-                            onSuccess: (savedMedia) => {
-                              form.setValue("featuredImageId", savedMedia.id);
-                            }
+                            onSuccess: (savedMedia) =>
+                              form.setValue("featuredImageId", savedMedia.id)
                           }
                         );
                       }
@@ -354,27 +345,25 @@ export function CreatePost({ className }: Props) {
                   ) : (
                     <MediaUploadWidget
                       widgetProps={{
-                        onSuccess: (result: any) => {
-                          const {
-                            public_id,
-                            secure_url,
-                            original_filename,
-                            bytes
-                          } = result.info;
+                        onSuccess: ({ info }, widget) => {
+                          widget.close();
+
+                          if (typeof info === "string") return;
+
                           saveMedia(
                             {
-                              publicId: public_id,
-                              url: secure_url,
-                              filename: original_filename,
-                              size: bytes,
-                              seoTitle: null,
-                              seoDescription: null,
-                              seoKeywords: null
+                              url: info?.url || null,
+                              filename: info?.original_filename || "",
+                              publicId: info?.public_id || null,
+                              size: info?.bytes || 0,
+                              seoDescription:
+                                form.getValues("seoDescription") || "",
+                              seoTitle: form.getValues("seoTitle") || "",
+                              seoKeywords: ""
                             },
                             {
-                              onSuccess: (savedMedia) => {
-                                form.setValue("authorLogoId", savedMedia.id);
-                              }
+                              onSuccess: (savedMedia) =>
+                                form.setValue("authorLogoId", savedMedia.id)
                             }
                           );
                         }
@@ -444,27 +433,25 @@ export function CreatePost({ className }: Props) {
                   ) : (
                     <MediaUploadWidget
                       widgetProps={{
-                        onSuccess: (result: any) => {
-                          const {
-                            public_id,
-                            secure_url,
-                            original_filename,
-                            bytes
-                          } = result.info;
+                        onSuccess: ({ info }, widget) => {
+                          widget.close();
+
+                          if (typeof info === "string") return;
+
                           saveMedia(
                             {
-                              publicId: public_id,
-                              url: secure_url,
-                              filename: original_filename,
-                              size: bytes,
-                              seoTitle: null,
-                              seoDescription: null,
-                              seoKeywords: null
+                              url: info?.url || null,
+                              filename: info?.original_filename || "",
+                              publicId: info?.public_id || null,
+                              size: info?.bytes || 0,
+                              seoDescription:
+                                form.getValues("seoDescription") || "",
+                              seoTitle: form.getValues("seoTitle") || "",
+                              seoKeywords: ""
                             },
                             {
-                              onSuccess: (savedMedia) => {
-                                form.setValue("ogImageId", savedMedia.id);
-                              }
+                              onSuccess: (savedMedia) =>
+                                form.setValue("ogImageId", savedMedia.id)
                             }
                           );
                         }

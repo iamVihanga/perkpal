@@ -43,5 +43,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 1. Remove update id from use journal table filters - Done
 2. Remove IDImageViewer from column, replace it with proper component - Done
-3. Refactor listing / new / update pages layout with standard way
-4. In create & update forms -> wrap rich text editor in form field
+3. Refactor listing / new / update pages layout with standard way - Done
