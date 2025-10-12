@@ -3,6 +3,7 @@
 import { CldImage } from "next-cloudinary";
 import { ColumnDef } from "@tanstack/react-table";
 import {
+  ChartLine,
   ImageIcon,
   MoreHorizontal,
   MoreHorizontalIcon,
@@ -154,6 +155,13 @@ export const createColumns = (
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
+
+            <DropdownMenuItem asChild>
+              <Link href={`/dashboard/leads?perk=${row.original.id}`}>
+                <ChartLine className="size-4 mr-2" />
+                View Leads
+              </Link>
+            </DropdownMenuItem>
 
             <DropdownMenuItem
               onSelect={(e) => {

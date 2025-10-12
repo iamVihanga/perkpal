@@ -11,7 +11,7 @@ import type {
   GetOneLeadRoute,
   ListLeadsRoute
 } from "./routes";
-import { leads, perks } from "@/database/schema";
+import { leads } from "@/database/schema";
 import { SelectPerkT } from "@/lib/zod/perks.zod";
 
 // List leads route handler
@@ -47,7 +47,7 @@ export const list: AppRouteHandler<ListLeadsRoute> = async (c) => {
     const limitNum = Math.max(1, Math.min(100, parseInt(limit))); // Cap at 100 items
     const offset = (pageNum - 1) * limitNum;
 
-    const whereConditions = perkId ? and(eq(perks.id, perkId)) : undefined;
+    const whereConditions = perkId ? and(eq(leads.perkId, perkId)) : undefined;
 
     // Build query with conditions
     const query = db.query.leads.findMany({
