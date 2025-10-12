@@ -63,3 +63,6 @@ export interface FormFieldConfigT {
     text: string; // "I agree to share my information..."
   };
 }
+
+// ---------- Lead Data Type -----------
+export type LeadDataT = Record<string, string | string[] | boolean>;

@@ -8,6 +8,7 @@ import media from "./media";
 import categories from "./categories";
 import subcategories from "./subcategories";
 import perks from "./perks";
+import leads from "./leads";
 
 export function registerRoutes(app: AppOpenAPI) {
   return app
@@ -15,7 +16,8 @@ export function registerRoutes(app: AppOpenAPI) {
     .route("/media", media)
     .route("/categories", categories)
     .route("/subcategories", subcategories)
-    .route("/perks", perks);
+    .route("/perks", perks)
+    .route("/leads", leads);
 }
 
 // stand alone router type used for api client
