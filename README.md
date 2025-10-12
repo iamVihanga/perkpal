@@ -38,3 +38,9 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 <!-- Dev Notes -->
 
 - Milestone 03 - Wrapping up "Perks" CRUD (UI and API) - Phase 01
+
+<!-- Fixes in journal -->
+
+1. Remove update id from use journal table filters - Done
+2. Remove IDImageViewer from column, replace it with proper component - Done
+3. Refactor listing / new / update pages layout with standard way - Done

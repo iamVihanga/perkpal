@@ -43,9 +43,8 @@ const data = {
       url: "/dashboard/journals",
       icon: IconNews,
       items: [
-        { title: "All Posts", url: "/dashboard/journals" },
-        { title: "Add New Post", url: "/dashboard/journals/new" },
-        { title: "Tags", url: "/dashboard/journals/tags" }
+        { title: "All Posts", url: "/dashboard/journal" },
+        { title: "Add New Post", url: "/dashboard/journal/new" }
       ]
     },
     {
