@@ -22,11 +22,6 @@ export function useJournalTableFilters() {
     searchParams.limit.withDefault(10)
   );
 
-  const [updateId, setUpdateId] = useQueryState(
-    "update",
-    searchParams.update.withDefault("")
-  );
-
   const resetFilters = () => {
     setSearchQuery("");
     setPage(1);
@@ -47,10 +42,6 @@ export function useJournalTableFilters() {
 
     // Reset
     resetFilters,
-    isAnyFilterActive,
-
-    // Update
-    updateId,
-    setUpdateId
+    isAnyFilterActive
   };
 }

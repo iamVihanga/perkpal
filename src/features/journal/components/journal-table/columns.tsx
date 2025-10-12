@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, Trash2, Edit } from "lucide-react";
+import { MoreHorizontal, Trash2, Edit, ImageIcon } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -9,13 +9,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
 import { IDImageViewer } from "@/modules/media/components/viewer-by-id";
 import { SelectPostT } from "@/lib/zod/journal.zod";
 import { DeletePost } from "../delete";
+import { CldImage } from "next-cloudinary";
 
 // This type is used to define the shape of our data.
 export type Post = Omit<SelectPostT, "createdAt"> & {
@@ -35,15 +34,22 @@ export const createColumns = (
 
       return (
         <div className="flex items-center gap-3">
-          {featuredImage?.id && (
-            <IDImageViewer
-              id={featuredImage.id}
-              className="size-10"
-              width={40}
-              height={40}
-              alt={title}
-            />
-          )}
+          <div className="flex items-center justify-center size-8 overflow-hidden">
+            {featuredImage?.publicId ? (
+              <CldImage
+                src={featuredImage?.publicId}
+                alt={title}
+                width={100}
+                height={100}
+                className="rounded-md object-cover w-full h-full"
+              />
+            ) : (
+              <div className="w-full h-full bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground">
+                <ImageIcon className="size-4" />
+              </div>
+            )}
+          </div>
+
           <Link
             href={`/dashboard/journal/${row.original.id}`}
             className="font-medium hover:underline cursor-pointer max-w-[200px] truncate"
@@ -75,32 +81,6 @@ export const createColumns = (
           <span className="text-muted-foreground">
             {authorName || "Anonymous"}
           </span>
-        </div>
-      );
-    }
-  },
-  {
-    accessorKey: "tags",
-    header: "Tags",
-    cell: ({ row }) => {
-      const tags = row.original.tags || [];
-
-      if (tags.length === 0) {
-        return <span className="text-muted-foreground text-sm">No tags</span>;
-      }
-
-      return (
-        <div className="flex flex-wrap gap-1 max-w-[200px]">
-          {tags.slice(0, 2).map((tag, index) => (
-            <Badge key={index} variant="secondary" className="text-xs">
-              {tag}
-            </Badge>
-          ))}
-          {tags.length > 2 && (
-            <Badge variant="outline" className="text-xs">
-              +{tags.length - 2}
-            </Badge>
-          )}
         </div>
       );
     }
@@ -152,8 +132,6 @@ export const createColumns = (
               <Edit className="mr-2 h-4 w-4" />
               Edit Post
             </DropdownMenuItem>
-
-            <DropdownMenuSeparator />
 
             <DeletePost id={post.id}>
               <DropdownMenuItem
