@@ -7,14 +7,14 @@ export const postBaseSchema = z.object({
   title: z.string().min(1).max(255),
   slug: z.string().min(1).max(255),
   content: z.string(),
-  shortExcerpt: z.string().max(500),
+  shortExcerpt: z.string().max(500).nullable(),
 
   featuredImageId: z.string().nullable(),
 
-  tags: z.array(z.string()).default([]),
+  tags: z.array(z.string()).default([]).nullable(),
 
-  authorName: z.string(),
-  authorLogoId: z.string(),
+  authorName: z.string().nullable(),
+  authorLogoId: z.string().nullable(),
 
   // SEO Fields
   seoTitle: z.string().nullable(),
@@ -35,9 +35,9 @@ export type PostBaseT = z.infer<typeof postBaseSchema>;
 export const selectPostSchema = postBaseSchema
   .omit({ featuredImageId: true, authorLogoId: true, ogImageId: true })
   .extend({
-    featuredImage: mediaSchema.optional(),
-    authorLogo: mediaSchema.optional(),
-    ogImage: mediaSchema.optional()
+    featuredImage: mediaSchema.nullable(),
+    authorLogo: mediaSchema.nullable(),
+    ogImage: mediaSchema.nullable()
   });
 
 // Create post Schema
