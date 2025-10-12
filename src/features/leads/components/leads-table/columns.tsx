@@ -16,6 +16,7 @@ import { SelectLeadSchema } from "@/lib/zod/leads.zod";
 
 import { DeleteLead } from "../delete";
 import Link from "next/link";
+import { ViewLead } from "../view";
 
 // This type is used to define the shape of our data.
 export type Lead = Omit<SelectLeadSchema, "createdAt"> & {
@@ -29,7 +30,7 @@ export const createColumns = (): ColumnDef<Lead>[] => [
     header: "IP",
     cell: ({ row }) => {
       return (
-        <div className="text-muted-foreground max-w-[150px] truncate">
+        <div className="text-muted-foreground truncate">
           {row.original.ip || "-"}
         </div>
       );
@@ -48,11 +49,18 @@ export const createColumns = (): ColumnDef<Lead>[] => [
   {
     accessorKey: "data",
     header: "Response",
-    cell: () => {
+    cell: ({ row }) => {
       return (
-        <Button size="sm" icon={<EyeIcon />}>
-          Inspect Lead
-        </Button>
+        <ViewLead
+          data={{
+            ...row.original,
+            createdAt: new Date(row.original.createdAt)
+          }}
+        >
+          <Button size="sm" variant={"ghost"} icon={<EyeIcon />}>
+            Inspect Lead
+          </Button>
+        </ViewLead>
       );
     }
   },
