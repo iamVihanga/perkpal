@@ -9,18 +9,20 @@ import { AppPageShell } from "@/modules/layouts/page-shell";
 import { Separator } from "@/components/ui/separator";
 
 interface UpdatePostPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default function UpdatePostPage({ params }: UpdatePostPageProps) {
+export default async function UpdatePostPage({ params }: UpdatePostPageProps) {
+  const { id } = await params;
+
   return (
     <PageContainer scrollable={false}>
       <div className="flex flex-1 flex-col space-y-4">
         <AppPageShell
           title="View / Update Post"
-          description={`View and update post: ${params.id}`}
+          description={`View and update post: ${id}`}
           actionComponent={
             <Button asChild icon={<ArrowLeft />} variant={"outline"}>
               <Link href="/dashboard/journal">Go Back</Link>
@@ -30,7 +32,7 @@ export default function UpdatePostPage({ params }: UpdatePostPageProps) {
 
         <Separator />
 
-        <UpdatePost postId={params.id} />
+        <UpdatePost postId={id} />
       </div>
     </PageContainer>
   );
