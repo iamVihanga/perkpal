@@ -11,7 +11,8 @@ export const searchParams = {
   q: parseAsString,
   sort: parseAsString,
   update: parseAsString,
-  category: parseAsString
+  category: parseAsString,
+  perk: parseAsString
 };
 
 export const searchParamsCache = createSearchParamsCache(searchParams);
