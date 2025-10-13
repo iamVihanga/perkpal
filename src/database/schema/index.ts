@@ -11,3 +11,7 @@ export * from "./perks.schema";
 export * from "./leads.schema";
 
 export * from "./journal.schema";
+
+export * from "./pages.schema";
+
+export * from "./settings.schema";
