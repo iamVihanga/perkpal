@@ -74,15 +74,7 @@ export const pagesSelectSchema = pagesBaseSchema
 
 export const sectionsSelectSchema = sectionsBaseSchema;
 
-export const contentFieldsSelectSchema = contentFieldsBaseSchema
-  .omit({
-    pageId: true,
-    sectionId: true
-  })
-  .extend({
-    page: pagesSelectSchema,
-    section: sectionsSelectSchema.optional()
-  });
+export const contentFieldsSelectSchema = contentFieldsBaseSchema;
 
 // ---- Create Schemas ----
 export const pagesCreateSchema = pagesBaseSchema.omit({
@@ -103,7 +95,8 @@ export const contentFieldsCreateSchema = contentFieldsBaseSchema
     id: true,
     createdAt: true,
     updatedAt: true,
-    displayOrder: true
+    displayOrder: true,
+    pageId: true
   })
   .extend({
     sectionId: z.string().nullable().optional()

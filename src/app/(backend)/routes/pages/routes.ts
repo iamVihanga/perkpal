@@ -1,23 +1,23 @@
 /*
 
 1. Pages Group
-    - Get single page by id/slug [Route ✅] [Handler ✅]
-    - Create a new page     [Route ✅] [Handler ✅]
-    - Update a page by id   [Route ✅] [Handler ✅]
-    - Delete a page by id   [Route ✅] [Handler ✅]
+    - Get single page by id/slug--------------------------[Route ✅] [Handler ✅]
+    - Create a new page-----------------------------------[Route ✅] [Handler ✅]
+    - Update a page by id---------------------------------[Route ✅] [Handler ✅]
+    - Delete a page by id---------------------------------[Route ✅] [Handler ✅]
 
 2. Sections Group
-    - List all sections by page id/slug   [Route ✅] [Handler ✅]
-    - Create a new section   [Route ✅] [Handler ✅]
-    - Update a section by id   [Route ✅] [Handler ✅]
-    - Delete a section by id  [Route ✅] [Handler ✅]
-    - Reorder sections    [Route ✅] [Handler ✅]
+    - List all sections by page id/slug-------------------[Route ✅] [Handler ✅]
+    - Create a new section--------------------------------[Route ✅] [Handler ✅]
+    - Update a section by id------------------------------[Route ✅] [Handler ✅]
+    - Delete a section by id------------------------------[Route ✅] [Handler ✅]
+    - Reorder sections------------------------------------[Route ✅] [Handler ✅]
 
 3. Content Fields Group
-    - List all content fields by page id / section id
-    - Create a new content field
-    - Update a content field by id
-    - Delete a content field by id
+    - List all content fields by page id / section id-----[Route ✅] [Handler ✅]
+    - Create a new content field--------------------------
+    - Update a content field by id------------------------
+    - Delete a content field by id------------------------
 
 */
 
@@ -28,6 +28,9 @@ import { z } from "zod";
 
 import { errorMessageSchema, stringIdParamSchema } from "@/lib/server/helpers";
 import {
+  contentFieldsCreateSchema,
+  contentFieldsSelectSchema,
+  contentFieldsUpdateSchema,
   pagesCreateSchema,
   pagesSelectSchema,
   pagesUpdateSchema,
@@ -361,3 +364,150 @@ export type CreateSectionRouteT = typeof createSection;
 export type UpdateSectionRouteT = typeof updateSection;
 export type DeleteSectionRouteT = typeof deleteSection;
 export type ReorderSectionsRouteT = typeof reorderSections;
+// ================================================================
+
+// ==================== Content Fields Group ======================
+
+const contentFieldsQuerySchema = z.object({
+  section_id: z.string().optional()
+});
+
+export const listContentFields = createRoute({
+  tags: pages_tags,
+  summary: "List page fields",
+  path: "/:id/fields",
+  method: "get",
+  request: {
+    params: stringIdParamSchema,
+    query: contentFieldsQuerySchema
+  },
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      z.array(contentFieldsSelectSchema),
+      "All content fields by page id (or section id)"
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      errorMessageSchema,
+      "Page does not exists"
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorMessageSchema,
+      "Internal server error"
+    )
+  }
+});
+
+export const createContentField = createRoute({
+  tags: pages_tags,
+  summary: "Create new content field",
+  path: "/:id/fields",
+  method: "post",
+  request: {
+    params: stringIdParamSchema,
+    body: jsonContentRequired(
+      contentFieldsCreateSchema,
+      "Content field create body"
+    )
+  },
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      contentFieldsSelectSchema,
+      "The newly created content field"
+    ),
+    [HttpStatusCodes.BAD_REQUEST]: jsonContent(
+      errorMessageSchema,
+      "Invalid request data"
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorMessageSchema,
+      "Internal server error"
+    ),
+    [HttpStatusCodes.UNAUTHORIZED]: jsonContent(
+      errorMessageSchema,
+      "Unauthorized access"
+    ),
+    [HttpStatusCodes.FORBIDDEN]: jsonContent(
+      errorMessageSchema,
+      "Forbidden access"
+    )
+  }
+});
+
+export const updateContentField = createRoute({
+  tags: pages_tags,
+  summary: "Update content field",
+  path: "/:id/fields/:fieldId",
+  method: "put",
+  request: {
+    params: stringIdParamSchema.extend({
+      fieldId: z.string().min(1, "Field ID is required")
+    }),
+    body: jsonContentRequired(contentFieldsUpdateSchema, "Update content field")
+  },
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      contentFieldsSelectSchema,
+      "The updated content field"
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      errorMessageSchema,
+      "Content field not found"
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorMessageSchema,
+      "Internal server error"
+    ),
+    [HttpStatusCodes.UNAUTHORIZED]: jsonContent(
+      errorMessageSchema,
+      "Unauthorized access"
+    ),
+    [HttpStatusCodes.FORBIDDEN]: jsonContent(
+      errorMessageSchema,
+      "Forbidden access"
+    )
+  }
+});
+
+export const deleteContentField = createRoute({
+  tags: pages_tags,
+  summary: "Delete content field by ID",
+  path: "/:id/fields/:fieldId",
+  method: "delete",
+  request: {
+    params: stringIdParamSchema.extend({
+      fieldId: z.string().min(1, "Field ID is required")
+    })
+  },
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      errorMessageSchema,
+      "The content field deleted"
+    ),
+    [HttpStatusCodes.BAD_REQUEST]: jsonContent(
+      errorMessageSchema,
+      "Invalid request data"
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      errorMessageSchema,
+      "Content field not found"
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorMessageSchema,
+      "Internal server error"
+    ),
+    [HttpStatusCodes.UNAUTHORIZED]: jsonContent(
+      errorMessageSchema,
+      "Unauthorized access"
+    ),
+    [HttpStatusCodes.FORBIDDEN]: jsonContent(
+      errorMessageSchema,
+      "Forbidden access"
+    )
+  }
+});
+
+// ---- Type Definitions ----
+export type ListContentFieldsRouteT = typeof listContentFields;
+export type CreateContentFieldRouteT = typeof createContentField;
+export type UpdateContentFieldRouteT = typeof updateContentField;
+export type DeleteContentFieldRouteT = typeof deleteContentField;

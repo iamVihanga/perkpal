@@ -12,6 +12,10 @@ const router = createRouter()
   .openapi(routes.createSection, handlers.createSection)
   .openapi(routes.updateSection, handlers.updateSection)
   .openapi(routes.deleteSection, handlers.deleteSection)
-  .openapi(routes.reorderSections, handlers.reorderSections);
+  .openapi(routes.reorderSections, handlers.reorderSections)
+  .openapi(routes.listContentFields, handlers.listContentFields)
+  .openapi(routes.createContentField, handlers.createContentField)
+  .openapi(routes.updateContentField, handlers.updateContentField)
+  .openapi(routes.deleteContentField, handlers.deleteContentField);
 
 export default router;
