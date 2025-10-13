@@ -9,6 +9,7 @@ import {
   text,
   uniqueIndex
 } from "drizzle-orm/pg-core";
+import { media } from "./media.schema";
 
 export const pageStatusEnum = pgEnum("page_status", [
   "draft",
@@ -103,8 +104,12 @@ export const contentFields = pgTable(
   ]
 );
 
-export const pagesRelations = relations(pages, ({ many }) => ({
-  sections: many(sections)
+export const pagesRelations = relations(pages, ({ many, one }) => ({
+  sections: many(sections),
+  ogImage: one(media, {
+    fields: [pages.og_image_id],
+    references: [media.id]
+  })
 }));
 
 export const sectionsRelations = relations(sections, ({ one }) => ({

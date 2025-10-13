@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { mediaSchema } from "./media.zod";
 
 export const pageStatusEnumZod = z.enum(["draft", "published", "archived"]);
 
@@ -63,7 +64,13 @@ export const contentFieldsBaseSchema = z.object({
 });
 
 // ---- Select Schemas ----
-export const pagesSelectSchema = pagesBaseSchema;
+export const pagesSelectSchema = pagesBaseSchema
+  .omit({
+    ogImageId: true
+  })
+  .extend({
+    ogImage: mediaSchema.optional()
+  });
 
 export const sectionsSelectSchema = sectionsBaseSchema
   .omit({
