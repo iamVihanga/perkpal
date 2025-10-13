@@ -72,13 +72,7 @@ export const pagesSelectSchema = pagesBaseSchema
     ogImage: mediaSchema.optional()
   });
 
-export const sectionsSelectSchema = sectionsBaseSchema
-  .omit({
-    pageId: true
-  })
-  .extend({
-    page: pagesSelectSchema
-  });
+export const sectionsSelectSchema = sectionsBaseSchema;
 
 export const contentFieldsSelectSchema = contentFieldsBaseSchema
   .omit({
@@ -100,14 +94,16 @@ export const pagesCreateSchema = pagesBaseSchema.omit({
 export const sectionsCreateSchema = sectionsBaseSchema.omit({
   id: true,
   createdAt: true,
-  updatedAt: true
+  updatedAt: true,
+  displayOrder: true
 });
 
 export const contentFieldsCreateSchema = contentFieldsBaseSchema
   .omit({
     id: true,
     createdAt: true,
-    updatedAt: true
+    updatedAt: true,
+    displayOrder: true
   })
   .extend({
     sectionId: z.string().nullable().optional()
