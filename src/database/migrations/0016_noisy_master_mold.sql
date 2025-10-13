@@ -1,0 +1,1 @@
+ALTER TABLE "sections" ALTER COLUMN "description" DROP NOT NULL;
