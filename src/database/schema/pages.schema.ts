@@ -51,7 +51,7 @@ export const sections = pgTable(
       .references(() => pages.id, { onDelete: "cascade" }),
 
     title: text("title").notNull(),
-    description: text("description").notNull(),
+    description: text("description"),
 
     displayOrder: integer("display_order").default(0),
 
