@@ -34,6 +34,7 @@ import {
   DialogFooter
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { MediaUploadWidget } from "../media/components/upload-widget";
 
 interface RichTextEditorProps {
   content?: string;
@@ -51,7 +52,6 @@ export function RichTextEditor({
   disabled = false
 }: RichTextEditorProps) {
   const [showLinkDialog, setShowLinkDialog] = useState(false);
-  const [showImageDialog, setShowImageDialog] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
 
   const editor = useEditor({
@@ -100,14 +100,18 @@ export function RichTextEditor({
     }
   };
 
+  const addImage = (imageUrl: string) => {
+    if (imageUrl && editor) {
+      editor.chain().focus().setImage({ src: imageUrl }).run();
+    }
+  };
+
   if (!editor) {
     return null;
   }
 
   return (
     <>
-      {showImageDialog}
-
       <div className={cn("border rounded-lg overflow-hidden", className)}>
         {/* Toolbar */}
         <div className="border-b bg-muted/50 p-2 flex flex-wrap gap-1">
@@ -252,7 +256,7 @@ export function RichTextEditor({
             <Link2 className="h-4 w-4" />
           </Button>
 
-          <Button
+          {/* <Button
             type="button"
             variant="ghost"
             size="sm"
@@ -261,7 +265,29 @@ export function RichTextEditor({
             disabled={disabled}
           >
             <ImageIcon className="h-4 w-4" />
-          </Button>
+          </Button> */}
+
+          <MediaUploadWidget
+            widgetProps={{
+              onSuccess: ({ info }, widget) => {
+                widget.close();
+
+                if (!info || typeof info === "string") return;
+
+                addImage(info.secure_url);
+              }
+            }}
+          >
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-8 px-2"
+              disabled={disabled}
+            >
+              <ImageIcon className="h-4 w-4" />
+            </Button>
+          </MediaUploadWidget>
 
           <div className="w-px h-6 bg-border mx-1" />
 
