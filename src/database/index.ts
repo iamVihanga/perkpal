@@ -5,7 +5,11 @@ import { env } from "@/lib/config/env";
 import * as schema from "./schema";
 
 const pool = new Pool({
-  connectionString: env.DATABASE_URL,
+  connectionString: process.env.DATABASE_URL || env.DATABASE_URL,
+
+  // UNCOMMENT for database seeding
+  // connectionString:
+  //   "postgresql://postgres:vihanga123@localhost:5432/perk-pal?schema=public",
   ssl: false
 });
 
