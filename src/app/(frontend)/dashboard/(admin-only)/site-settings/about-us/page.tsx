@@ -4,6 +4,7 @@ import PageContainer from "@/modules/layouts/page-container";
 import { AppPageShell } from "@/modules/layouts/page-shell";
 import FieldsTable from "@/features/pages/components/fields-listing/listing";
 import { CreateFieldDialog } from "@/features/pages/components/create-field";
+import { EditPageSettings } from "@/features/pages/components/edit-page-settings";
 
 export default function DashboardAboutUsPage() {
   return (
@@ -14,6 +15,7 @@ export default function DashboardAboutUsPage() {
           description="Update content fields for selected page"
           actionComponent={
             <div className="flex items-center gap-2">
+              <EditPageSettings pageSlug="about" />
               <CreateFieldDialog pageSlug="about" />
             </div>
           }

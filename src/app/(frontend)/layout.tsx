@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+
 import "./globals.css";
 import { fontSans, fontHeading, fontPalo } from "@/lib/fonts";
 import { Toaster } from "sonner";
@@ -22,6 +25,9 @@ export default function RootLayout({
         <Providers>
           {children}
           <Toaster position="bottom-left" />
+
+          <SpeedInsights />
+          <Analytics />
         </Providers>
       </body>
     </html>

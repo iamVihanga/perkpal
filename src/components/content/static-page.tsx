@@ -1,8 +1,6 @@
 import React from "react";
 import { Metadata } from "next";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
-import Link from "next/link";
+import { notFound } from "next/navigation";
 import {
   getPageData,
   generatePageMetadata,
@@ -10,38 +8,38 @@ import {
 } from "@/lib/cms/page-data";
 import { WireframeNavbar } from "@/components/layout/wireframe-navbar";
 
-// ISR: Revalidate every 15 minutes for landing page content
-export const revalidate = 900;
+interface StaticPageProps {
+  slug: string;
+  fallbackTitle?: string;
+  fallbackDescription?: string;
+}
 
-// Generate metadata for SEO
-export async function generateMetadata(): Promise<Metadata> {
-  const pageData = await getPageData("/");
+export async function generateStaticPageMetadata({
+  slug,
+  fallbackTitle
+}: StaticPageProps): Promise<Metadata> {
+  const pageData = await getPageData(slug);
 
   if (!pageData) {
     return {
-      title: "PerkPal - Discover Amazing Perks and Deals",
+      title: fallbackTitle || "PerkPal",
       description:
         "Find exclusive perks and deals tailored just for you with PerkPal."
     };
   }
 
-  return generatePageMetadata(
-    pageData,
-    "PerkPal - Discover Amazing Perks and Deals"
-  );
+  return generatePageMetadata(pageData, fallbackTitle);
 }
 
-export default async function Home() {
-  const session = await auth.api.getSession({
-    headers: await headers()
-  });
+export default async function StaticPage({
+  slug,
+  fallbackTitle
+}: StaticPageProps) {
+  // Fetch page data server-side
+  const pageData = await getPageData(slug);
 
-  // Fetch CMS page data server-side
-  const pageData = await getPageData("/");
-
-  // If no CMS content is found, fall back to the original design
-  if (!pageData || pageData.sections.length === 0) {
-    return <></>;
+  if (!pageData) {
+    notFound();
   }
 
   // Generate structured data for SEO
@@ -50,22 +48,15 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Wireframe Navigation */}
-      <WireframeNavbar currentPage="landing" />
+      <WireframeNavbar currentPage={slug} />
 
       <div className="p-8">
         {/* Simple Header */}
         <header className="mb-8 border-b pb-4">
           <h1 className="text-2xl font-bold">
-            PerkPal Landing Page - Wireframe
+            {pageData.seoTitle || pageData.title || fallbackTitle} - Wireframe
           </h1>
-          {session && (
-            <p className="text-sm text-gray-600">
-              Welcome, {session.user.name || session.user.email}!{" "}
-              <Link href="/dashboard" className="text-blue-600 underline">
-                Go to Dashboard
-              </Link>
-            </p>
-          )}
+          <p className="text-sm text-gray-600 mt-1">Slug: /{slug}</p>
         </header>
 
         {/* SEO Structured Data */}

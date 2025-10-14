@@ -44,3 +44,14 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 1. Remove update id from use journal table filters - Done
 2. Remove IDImageViewer from column, replace it with proper component - Done
 3. Refactor listing / new / update pages layout with standard way - Done
+
+- Analyse whole pages / sections / content fields database architecture, zod schemas, api routes and handlers, react queries, listing / creating / deleting / updating / reordering components etc. and all related features.
+
+- then get a brief idea about how I tried to make little CMS type of content management system here.
+
+- And have a in deep analyse into nextjs app router pages in (frontend) route group. in site-settings path, Im using every admin related management components to manage these contents.
+
+And I need from you to prepare static pages in nextjs standard app router pages with proper RSC - React server components & nextjs server side data fetching best practices with helpof contents in my database.
+you must use src/lib/rpc/server/index.ts file's server side rpc client to fetch cms data.
+
+- And you must keep focus on render those pages / sections and every content fields in landing and other static pages in SEO optimized way. Im highly demand page performance and SEO optimizations here.
