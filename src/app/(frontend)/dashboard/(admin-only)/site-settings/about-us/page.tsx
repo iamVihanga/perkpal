@@ -1,0 +1,26 @@
+import React from "react";
+
+import PageContainer from "@/modules/layouts/page-container";
+import { AppPageShell } from "@/modules/layouts/page-shell";
+import FieldsTable from "@/features/pages/components/fields-listing/listing";
+import { CreateFieldDialog } from "@/features/pages/components/create-field";
+
+export default function DashboardAboutUsPage() {
+  return (
+    <PageContainer scrollable={false}>
+      <div className="flex flex-1 flex-col space-y-4">
+        <AppPageShell
+          title={`Page: About Us`}
+          description="Update content fields for selected page"
+          actionComponent={
+            <div className="flex items-center gap-2">
+              <CreateFieldDialog pageSlug="about" />
+            </div>
+          }
+        />
+
+        <FieldsTable pageSlug="about" />
+      </div>
+    </PageContainer>
+  );
+}

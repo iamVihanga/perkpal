@@ -95,7 +95,12 @@ export const createContentField: AppRouteHandler<
 
     const [newField] = await db
       .insert(contentFields)
-      .values({ ...body, pageId: params.id, displayOrder: nextDisplayOrder })
+      .values({
+        ...body,
+        value: body?.value || "",
+        pageId: params.id,
+        displayOrder: nextDisplayOrder
+      })
       .returning();
 
     const preparedResult: ContentFieldsSelectT =
@@ -156,7 +161,7 @@ export const updateContentField: AppRouteHandler<
 
     const [updatedField] = await db
       .update(contentFields)
-      .set(body)
+      .set({ ...body, updatedAt: new Date() })
       .where(eq(contentFields.id, existingField.id))
       .returning();
 

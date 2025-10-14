@@ -13,6 +13,8 @@ export const contentFieldsTypesEnumZod = z.enum([
   "boolean"
 ]);
 
+export type ContentFieldType = z.infer<typeof contentFieldsTypesEnumZod>;
+
 // ---- Base Schemas ----
 export const pagesBaseSchema = z.object({
   id: z.string(),
@@ -83,12 +85,16 @@ export const pagesCreateSchema = pagesBaseSchema.omit({
   updatedAt: true
 });
 
-export const sectionsCreateSchema = sectionsBaseSchema.omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  displayOrder: true
-});
+export const sectionsCreateSchema = sectionsBaseSchema
+  .omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+    displayOrder: true
+  })
+  .extend({
+    pageId: z.string().nullable().optional()
+  });
 
 export const contentFieldsCreateSchema = contentFieldsBaseSchema
   .omit({
@@ -99,7 +105,10 @@ export const contentFieldsCreateSchema = contentFieldsBaseSchema
     pageId: true
   })
   .extend({
-    sectionId: z.string().nullable().optional()
+    sectionId: z.string().nullable().optional(),
+    metadata: z.object({}).optional(), // Make metadata optional
+    type: contentFieldsTypesEnumZod, // Remove default to make it required
+    value: z.string().optional() // Make value optional for create
   });
 
 // ---- Update Schemas ----
