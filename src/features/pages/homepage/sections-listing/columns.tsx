@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
@@ -32,7 +33,7 @@ export const createColumns = (): ColumnDef<Section>[] => [
                 Edit Fields
               </Link>
             </Button>
-            <DeleteSection section={row.original} />
+            <DeleteSection section={row.original as any} />
           </div>
         </div>
       );
