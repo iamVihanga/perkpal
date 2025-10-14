@@ -34,7 +34,7 @@ export const getPage: AppRouteHandler<GetPageRouteT> = async (c) => {
       });
 
       if (pageById) {
-        fetchedPage = { ...pageById, ogImage: pageById.ogImage! };
+        fetchedPage = { ...pageById, ogImage: pageById.ogImage || undefined };
       }
     }
 
@@ -50,7 +50,10 @@ export const getPage: AppRouteHandler<GetPageRouteT> = async (c) => {
       });
 
       if (pageBySlug) {
-        fetchedPage = { ...pageBySlug, ogImage: pageBySlug.ogImage! };
+        fetchedPage = {
+          ...pageBySlug,
+          ogImage: pageBySlug.ogImage || undefined
+        };
       }
     }
 
@@ -97,7 +100,7 @@ export const createPage: AppRouteHandler<CreatePageRouteT> = async (c) => {
 
     const [createdPage] = await db
       .insert(pages)
-      .values({ ...body, og_image_id: body.ogImageId })
+      .values({ ...body })
       .returning();
 
     const fetchedPage = await db.query.pages.findFirst({
@@ -114,7 +117,7 @@ export const createPage: AppRouteHandler<CreatePageRouteT> = async (c) => {
 
     const preparedResult: PagesSelectT = {
       ...fetchedPage,
-      ogImage: fetchedPage.ogImage!
+      ogImage: fetchedPage.ogImage || undefined
     };
 
     return c.json(preparedResult, HttpStatusCodes.CREATED);
@@ -160,7 +163,7 @@ export const updatePage: AppRouteHandler<UpdatePageRouteT> = async (c) => {
 
     const [updatedPage] = await db
       .update(pages)
-      .set({ ...body, og_image_id: body.ogImageId, updatedAt: new Date() })
+      .set({ ...body, updatedAt: new Date() })
       .where(eq(pages.id, param.id))
       .returning();
 
@@ -178,7 +181,7 @@ export const updatePage: AppRouteHandler<UpdatePageRouteT> = async (c) => {
 
     const preparedResult: PagesSelectT = {
       ...fetchedPage,
-      ogImage: fetchedPage.ogImage!
+      ogImage: fetchedPage.ogImage || undefined
     };
 
     return c.json(preparedResult, HttpStatusCodes.OK);

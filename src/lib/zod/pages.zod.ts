@@ -24,10 +24,10 @@ export const pagesBaseSchema = z.object({
 
   status: pageStatusEnumZod.default("draft"),
 
-  // SEO Fields
+  // SEO Fields - matching database schema
   seoTitle: z.string().nullable(),
   seoDescription: z.string().nullable(),
-  ogImageId: z.string().nullable(),
+  og_image_id: z.string().nullable(),
 
   // Timestamps
   createdAt: z.date().nullable(),
@@ -68,7 +68,7 @@ export const contentFieldsBaseSchema = z.object({
 // ---- Select Schemas ----
 export const pagesSelectSchema = pagesBaseSchema
   .omit({
-    ogImageId: true
+    og_image_id: true
   })
   .extend({
     ogImage: mediaSchema.optional()
