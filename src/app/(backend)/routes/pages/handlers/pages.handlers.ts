@@ -186,6 +186,8 @@ export const updatePage: AppRouteHandler<UpdatePageRouteT> = async (c) => {
 
     return c.json(preparedResult, HttpStatusCodes.OK);
   } catch (error) {
+    console.log(error);
+
     return c.json(
       {
         message:

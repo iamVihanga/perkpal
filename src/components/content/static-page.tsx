@@ -6,11 +6,7 @@ import {
   generatePageMetadata,
   generatePageStructuredData
 } from "@/lib/cms/page-data";
-import { PageSection } from "@/components/content/page-section";
-import {
-  StaticPageHeader,
-  StaticPageFooter
-} from "@/components/layout/static-page-layout";
+import { WireframeNavbar } from "@/components/layout/wireframe-navbar";
 
 interface StaticPageProps {
   slug: string;
@@ -35,7 +31,10 @@ export async function generateStaticPageMetadata({
   return generatePageMetadata(pageData, fallbackTitle);
 }
 
-export default async function StaticPage({ slug }: StaticPageProps) {
+export default async function StaticPage({
+  slug,
+  fallbackTitle
+}: StaticPageProps) {
   // Fetch page data server-side
   const pageData = await getPageData(slug);
 
@@ -47,47 +46,74 @@ export default async function StaticPage({ slug }: StaticPageProps) {
   const structuredData = generatePageStructuredData(pageData);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Navigation */}
-      <StaticPageHeader />
+    <div className="min-h-screen bg-gray-50">
+      {/* Wireframe Navigation */}
+      <WireframeNavbar currentPage={slug} />
 
-      {/* Structured Data for SEO */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
-
-      <main className="flex-1">
-        {/* Page Header */}
-        <header className="bg-primary/5 py-16">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              {pageData.seoTitle || pageData.title}
-            </h1>
-            {pageData.seoDescription && (
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                {pageData.seoDescription}
-              </p>
-            )}
-          </div>
+      <div className="p-8">
+        {/* Simple Header */}
+        <header className="mb-8 border-b pb-4">
+          <h1 className="text-2xl font-bold">
+            {pageData.seoTitle || pageData.title || fallbackTitle} - Wireframe
+          </h1>
+          <p className="text-sm text-gray-600 mt-1">Slug: /{slug}</p>
         </header>
 
-        {/* Page Content */}
-        <div className="container mx-auto px-4 py-16">
-          <div className="max-w-4xl mx-auto space-y-16">
-            {pageData.sections.map((section) => (
-              <PageSection
-                key={section.id}
-                section={section}
-                className="prose prose-lg max-w-none"
-              />
-            ))}
+        {/* SEO Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+
+        {/* Page Data as JSON */}
+        <div className="space-y-6">
+          <div className="border border-gray-300 p-4 rounded">
+            <h2 className="text-lg font-semibold mb-2">Page Metadata</h2>
+            <pre className="text-sm bg-gray-100 p-3 rounded overflow-auto">
+              {JSON.stringify(
+                {
+                  id: pageData.id,
+                  title: pageData.title,
+                  slug: pageData.slug,
+                  seoTitle: pageData.seoTitle,
+                  seoDescription: pageData.seoDescription,
+                  status: pageData.status
+                },
+                null,
+                2
+              )}
+            </pre>
+          </div>
+
+          <div className="border border-gray-300 p-4 rounded">
+            <h2 className="text-lg font-semibold mb-2">
+              Sections ({pageData.sections.length})
+            </h2>
+            <div className="space-y-4">
+              {pageData.sections.map((section) => (
+                <div
+                  key={section.id}
+                  className="border border-gray-200 p-3 rounded"
+                >
+                  <h3 className="font-medium mb-2">
+                    Section: {section.title || "Untitled"}
+                  </h3>
+                  <pre className="text-xs bg-gray-100 p-2 rounded overflow-auto">
+                    {JSON.stringify(section, null, 2)}
+                  </pre>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="border border-gray-300 p-4 rounded">
+            <h2 className="text-lg font-semibold mb-2">Structured Data</h2>
+            <pre className="text-sm bg-gray-100 p-3 rounded overflow-auto">
+              {JSON.stringify(structuredData, null, 2)}
+            </pre>
           </div>
         </div>
-      </main>
-
-      {/* Footer */}
-      <StaticPageFooter />
+      </div>
     </div>
   );
 }
