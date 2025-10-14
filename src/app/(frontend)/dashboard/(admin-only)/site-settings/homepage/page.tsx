@@ -3,6 +3,7 @@ import React from "react";
 import PageContainer from "@/modules/layouts/page-container";
 import { AppPageShell } from "@/modules/layouts/page-shell";
 import DraggableSectionsTable from "@/features/pages/homepage/sections-listing/draggable-listing";
+import { CreatePageSection } from "@/features/pages/components/create-section";
 
 export default function DashboardHomepage() {
   return (
@@ -11,10 +12,8 @@ export default function DashboardHomepage() {
         <AppPageShell
           title="Homepage Sections"
           description="Customize homepage sections to tailor the user experience."
-          actionComponent={<span>Add new section</span>}
+          actionComponent={<CreatePageSection pageSlug="/" />}
         />
-
-        {/* <Separator /> */}
 
         <DraggableSectionsTable />
       </div>

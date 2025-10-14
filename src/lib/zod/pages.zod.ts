@@ -85,12 +85,16 @@ export const pagesCreateSchema = pagesBaseSchema.omit({
   updatedAt: true
 });
 
-export const sectionsCreateSchema = sectionsBaseSchema.omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  displayOrder: true
-});
+export const sectionsCreateSchema = sectionsBaseSchema
+  .omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+    displayOrder: true
+  })
+  .extend({
+    pageId: z.string().nullable().optional()
+  });
 
 export const contentFieldsCreateSchema = contentFieldsBaseSchema
   .omit({
