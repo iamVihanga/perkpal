@@ -280,7 +280,7 @@ export async function seedFAQPage() {
 
 export async function seedTOSPage() {
   const tosPage = await db.query.pages.findFirst({
-    where: (fields, { eq }) => eq(fields.slug, "faq")
+    where: (fields, { eq }) => eq(fields.slug, "terms-of-service")
   });
 
   if (!tosPage) {

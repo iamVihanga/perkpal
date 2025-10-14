@@ -10,6 +10,8 @@ const pool = new Pool({
   // UNCOMMENT for database seeding
   // connectionString:
   //   "postgresql://postgres:vihanga123@localhost:5432/perk-pal?schema=public",
+  // connectionString:
+  //   "postgresql://neondb_owner:npg_4P5qCDGEykjM@ep-summer-sunset-a1w9by8d-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require",
   ssl: false
 });
 
