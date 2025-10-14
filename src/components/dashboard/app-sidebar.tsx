@@ -79,20 +79,20 @@ const data = {
           url: "/dashboard/site-settings/about-us"
         },
         {
-          title: "Partner with Us",
-          url: "/dashboard/site-settings/partner-with-us"
-        },
-        {
-          title: "ToS/Privacy",
-          url: "/dashboard/site-settings/tos-privacy"
-        },
-        {
           title: "Contact",
           url: "/dashboard/site-settings/contact"
         },
         {
-          title: "Journal",
-          url: "/dashboard/site-settings/journal"
+          title: "FAQ",
+          url: "/dashboard/site-settings/faq"
+        },
+        {
+          title: "Terms of Services",
+          url: "/dashboard/site-settings/tos"
+        },
+        {
+          title: "Privacy Policy",
+          url: "/dashboard/site-settings/privacy-policy"
         }
       ]
     },

@@ -1,4 +1,12 @@
-import { seedPages, seedHomepageSections } from "./pages.seed";
+import {
+  seedPages,
+  seedHomepageSections,
+  seedAboutPage,
+  seedContactPage,
+  seedFAQPage,
+  seedPrivacyPage,
+  seedTOSPage
+} from "./pages.seed";
 
 async function main() {
   console.log("🌱 Starting database seeding...");
@@ -9,6 +17,11 @@ async function main() {
 
     // Then seed homepage sections (depends on pages)
     await seedHomepageSections();
+    await seedAboutPage();
+    await seedContactPage();
+    await seedFAQPage();
+    await seedPrivacyPage();
+    await seedTOSPage();
 
     console.log("✅ Database seeding completed successfully!");
   } catch (error) {

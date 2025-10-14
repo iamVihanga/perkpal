@@ -2,6 +2,7 @@
 import { SectionsSelectT } from "@/lib/zod/pages.zod";
 import { db } from "../index";
 import { pages, sections, contentFields } from "../schema";
+import { eq } from "drizzle-orm";
 
 export async function seedPages() {
   // Check if there are any pages already in the database
@@ -172,4 +173,175 @@ export async function seedHomepageSections() {
   }
 
   console.log(`✅ Seeded content fields for the homepage sections.`);
+}
+
+export async function seedAboutPage() {
+  // Fetch the homepage to get its ID
+  const aboutPage = await db.query.pages.findFirst({
+    where: (fields, { eq }) => eq(fields.slug, "about")
+  });
+
+  if (!aboutPage) {
+    console.error("❌ About page not found. Cannot seed sections.");
+    return;
+  }
+
+  //   Check if content fields already exist
+  const existingContentFields = await db
+    .select()
+    .from(contentFields)
+    .where(eq(contentFields.pageId, aboutPage.id))
+    .limit(1);
+
+  if (existingContentFields.length !== 0) {
+    console.log("⚠️ About Page - Content fields already seeded. Skipping...");
+    return;
+  }
+
+  await db.insert(contentFields).values([
+    {
+      key: "content",
+      value: "",
+      type: "rich_text",
+      pageId: aboutPage.id
+    }
+  ]);
+
+  console.log(`✅ Seeded content fields for the "About Us" page.`);
+}
+
+export async function seedContactPage() {
+  const contactPage = await db.query.pages.findFirst({
+    where: (fields, { eq }) => eq(fields.slug, "contact")
+  });
+
+  if (!contactPage) {
+    console.error("❌ Contact page not found. Cannot seed sections.");
+    return;
+  }
+
+  //   Check if content fields already exist
+  const existingContentFields = await db
+    .select()
+    .from(contentFields)
+    .where(eq(contentFields.pageId, contactPage.id))
+    .limit(1);
+
+  if (existingContentFields.length !== 0) {
+    console.log("⚠️ Contact Page - Content fields already seeded. Skipping...");
+    return;
+  }
+
+  await db.insert(contentFields).values([
+    {
+      key: "content",
+      value: "",
+      type: "rich_text",
+      pageId: contactPage.id
+    }
+  ]);
+
+  console.log(`✅ Seeded content fields for the "Contact" page.`);
+}
+
+export async function seedFAQPage() {
+  const faqPage = await db.query.pages.findFirst({
+    where: (fields, { eq }) => eq(fields.slug, "faq")
+  });
+
+  if (!faqPage) {
+    console.error("❌ FAQ page not found. Cannot seed sections.");
+    return;
+  }
+
+  //   Check if content fields already exist
+  const existingContentFields = await db
+    .select()
+    .from(contentFields)
+    .where(eq(contentFields.pageId, faqPage.id))
+    .limit(1);
+
+  if (existingContentFields.length !== 0) {
+    console.log("⚠️ FAQ Page - Content fields already seeded. Skipping...");
+    return;
+  }
+
+  await db.insert(contentFields).values([
+    {
+      key: "content",
+      value: "",
+      type: "rich_text",
+      pageId: faqPage.id
+    }
+  ]);
+
+  console.log(`✅ Seeded content fields for the "FAQ" page.`);
+}
+
+export async function seedTOSPage() {
+  const tosPage = await db.query.pages.findFirst({
+    where: (fields, { eq }) => eq(fields.slug, "faq")
+  });
+
+  if (!tosPage) {
+    console.error("❌ TOS page not found. Cannot seed sections.");
+    return;
+  }
+
+  //   Check if content fields already exist
+  const existingContentFields = await db
+    .select()
+    .from(contentFields)
+    .where(eq(contentFields.pageId, tosPage.id))
+    .limit(1);
+
+  if (existingContentFields.length !== 0) {
+    console.log("⚠️ TOS Page - Content fields already seeded. Skipping...");
+    return;
+  }
+
+  await db.insert(contentFields).values([
+    {
+      key: "content",
+      value: "",
+      type: "rich_text",
+      pageId: tosPage.id
+    }
+  ]);
+
+  console.log(`✅ Seeded content fields for the "TOS" page.`);
+}
+
+export async function seedPrivacyPage() {
+  const privacyPage = await db.query.pages.findFirst({
+    where: (fields, { eq }) => eq(fields.slug, "privacy-policy")
+  });
+
+  if (!privacyPage) {
+    console.error("❌ Privacy page not found. Cannot seed sections.");
+    return;
+  }
+
+  //   Check if content fields already exist
+  const existingContentFields = await db
+    .select()
+    .from(contentFields)
+    .where(eq(contentFields.pageId, privacyPage.id))
+    .limit(1);
+
+  if (existingContentFields.length !== 0) {
+    console.log("⚠️ Privacy Page - Content fields already seeded. Skipping...");
+    return;
+  }
+
+  await db.insert(contentFields).values([
+    {
+      key: "content",
+      value: "",
+      type: "rich_text",
+      pageId: privacyPage.id
+    }
+  ]);
+
+  console.log(`✅ Seeded content fields for the "Privacy" page.`);
 }
