@@ -24,6 +24,7 @@ export const auth = betterAuth({
   // Email Authentication
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: true,
 
     sendResetPassword: async ({ user, url, token }, request) => {
       // TODO: Implement email sending logic
@@ -35,6 +36,7 @@ export const auth = betterAuth({
     }
   },
   emailVerification: {
+    sendOnSignUp: true,
     sendVerificationEmail: async ({ user, url, token }, request) => {
       // TODO: Implement email sending logic
       console.log({
