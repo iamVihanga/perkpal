@@ -66,3 +66,6 @@ export interface FormFieldConfigT {
 
 // ---------- Lead Data Type -----------
 export type LeadDataT = Record<string, string | string[] | boolean>;
+
+// ---------- Utility Types -----------
+export type RoleTypes = "admin" | "user" | "contentEditor";
