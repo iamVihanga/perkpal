@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { SectionsSelectT } from "@/lib/zod/pages.zod";
 import { db } from "../index";
 import { pages, sections, contentFields } from "../schema";
 import { eq } from "drizzle-orm";

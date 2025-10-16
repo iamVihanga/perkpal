@@ -13,6 +13,7 @@ import journal from "./journal";
 import pages from "./pages";
 import users from "./users";
 import settings from "./settings";
+import analytics from "./analytics";
 
 export function registerRoutes(app: AppOpenAPI) {
   return app
@@ -25,7 +26,8 @@ export function registerRoutes(app: AppOpenAPI) {
     .route("/journal", journal)
     .route("/pages", pages)
     .route("/users", users)
-    .route("/settings", settings);
+    .route("/settings", settings)
+    .route("/analytics", analytics);
 }
 
 // stand alone router type used for api client

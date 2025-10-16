@@ -39,19 +39,33 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 - Milestone 03 - Wrapping up "Perks" CRUD (UI and API) - Phase 01
 
-<!-- Fixes in journal -->
+<!-- Prompts -->
 
-1. Remove update id from use journal table filters - Done
-2. Remove IDImageViewer from column, replace it with proper component - Done
-3. Refactor listing / new / update pages layout with standard way - Done
+Analyse how my current project is organized including
 
-- Analyse whole pages / sections / content fields database architecture, zod schemas, api routes and handlers, react queries, listing / creating / deleting / updating / reordering components etc. and all related features.
+- Database Schemas
+- Zod Schemas
+- API Routes and Handlers
+- React-query queries and mutations
+- RPC Communication for both serverside and client side data fetching
+  etc.
 
-- then get a brief idea about how I tried to make little CMS type of content management system here.
+---
 
-- And have a in deep analyse into nextjs app router pages in (frontend) route group. in site-settings path, Im using every admin related management components to manage these contents.
+Then I need you to do following tasks in order
 
-And I need from you to prepare static pages in nextjs standard app router pages with proper RSC - React server components & nextjs server side data fetching best practices with helpof contents in my database.
-you must use src/lib/rpc/server/index.ts file's server side rpc client to fetch cms data.
+- Create new API routes and handlers group dedicated to get dashboard analytical data. the folder should be in "src\app\(backend)\routes". It should includes routes.ts, index.ts, handlers.ts like in all other route groups.
 
-- And you must keep focus on render those pages / sections and every content fields in landing and other static pages in SEO optimized way. Im highly demand page performance and SEO optimizations here.
+- Simultanously create appropiate zod schemas file for help that route group and client side operations as I have done for other entities.
+
+- Prepare all queries & components required for rendering process on dashboard page in path "src\features", new folder called "overview" or "metrics" (any most suitable).
+
+- These are the main overview metrics i need to render on dashboard page,
+
+* Total deals live (Active)
+* Number of leads collected (time-range filter)
+* Recent submissions / top-performing perks (depends on leads)
+* Any other 1 metric you suggest.
+
+- You must use this following metric card for UI.
+  "src\components\ui\section-card.tsx" (Customize it according to purpose. but keep UI same as it is)

@@ -26,10 +26,20 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
 
 const sitemapPageSchema = z.object({
   slug: z.string().min(1, "Slug is required"),
-  title: z.string().min(1, "Title is required")
+  title: z.string().min(1, "Title is required"),
+  priority: z.string().optional(),
+  changefreq: z.string().optional(),
+  lastmod: z.string().optional()
 });
 
 const sitemapSettingsSchema = z.object({
@@ -79,7 +89,10 @@ export function SitemapSettingsForm({ initialData }: FormProps) {
   const addNewPage = () => {
     append({
       slug: "",
-      title: ""
+      title: "",
+      priority: "0.5",
+      changefreq: "weekly",
+      lastmod: new Date().toISOString().split("T")[0]
     });
   };
 
@@ -146,6 +159,92 @@ export function SitemapSettingsForm({ initialData }: FormProps) {
                           <Input placeholder="About Us" {...field} />
                         </FormControl>
                         <FormDescription>Page title</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name={`pages.${index}.priority`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Priority</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select priority" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="1.0">1.0 (Highest)</SelectItem>
+                            <SelectItem value="0.9">0.9</SelectItem>
+                            <SelectItem value="0.8">0.8</SelectItem>
+                            <SelectItem value="0.7">0.7</SelectItem>
+                            <SelectItem value="0.6">0.6</SelectItem>
+                            <SelectItem value="0.5">0.5 (Medium)</SelectItem>
+                            <SelectItem value="0.4">0.4</SelectItem>
+                            <SelectItem value="0.3">0.3</SelectItem>
+                            <SelectItem value="0.2">0.2</SelectItem>
+                            <SelectItem value="0.1">0.1 (Lowest)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>
+                          Page importance (0.0 - 1.0)
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name={`pages.${index}.changefreq`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Change Frequency</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select frequency" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="always">Always</SelectItem>
+                            <SelectItem value="hourly">Hourly</SelectItem>
+                            <SelectItem value="daily">Daily</SelectItem>
+                            <SelectItem value="weekly">Weekly</SelectItem>
+                            <SelectItem value="monthly">Monthly</SelectItem>
+                            <SelectItem value="yearly">Yearly</SelectItem>
+                            <SelectItem value="never">Never</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>
+                          How often the page changes
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name={`pages.${index}.lastmod`}
+                    render={({ field }) => (
+                      <FormItem className="md:col-span-2">
+                        <FormLabel>Last Modified</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          Last modification date
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
