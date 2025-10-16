@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 import { useGetRecentSubmissions } from "../queries/use-get-recent-submissions";
+import { ExportLeadsButton } from "@/features/leads/components/export-leads-button";
 
 interface RecentSubmissionsProps {
   limit?: number;
@@ -115,7 +116,10 @@ export function RecentSubmissions({ limit = 5 }: RecentSubmissionsProps) {
           </div>
         )}
         {data && data.length > 0 && (
-          <div className="mt-6 text-center">
+          <div className="mt-6 flex justify-between items-center">
+            <ExportLeadsButton variant="ghost" size="sm" className="text-xs">
+              Export All
+            </ExportLeadsButton>
             <Button variant="outline" size="sm" asChild>
               <a href="/dashboard/leads">View all submissions</a>
             </Button>
