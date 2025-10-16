@@ -7,6 +7,7 @@ import {
   seedPrivacyPage,
   seedTOSPage
 } from "./pages.seed";
+import { seedSettings } from "./settings.seed";
 
 async function main() {
   console.log("🌱 Starting database seeding...");
@@ -22,6 +23,7 @@ async function main() {
     await seedFAQPage();
     await seedPrivacyPage();
     await seedTOSPage();
+    await seedSettings();
 
     console.log("✅ Database seeding completed successfully!");
   } catch (error) {
