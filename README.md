@@ -41,31 +41,116 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 <!-- Prompts -->
 
-Analyse how my current project is organized including
+Well, previous developments are all done, this one is a new development...
 
-- Database Schemas
-- Zod Schemas
-- API Routes and Handlers
-- React-query queries and mutations
-- RPC Communication for both serverside and client side data fetching
-  etc.
+- I need to prepare these pages in frontend landing page side (Which requires more SEO presence etc.)
+
+* /perks — listing, global filters
+* /perks/:category-slug — shows subcategories + perks under them
+* /perks/:category-slug/:perk-slug — detail page
+
+This perks nextjs path directory should be inside here: "src\app\(frontend)\(landing)"
+
+And it should follow the best SEO and Nextjs best practices, Some of them I already have implemented in attached files.
+
+And also I need this requirement related to perks listing feature also,
+Which one is,
+
+- JSON-LD schema support for each perks, My client requested basically,
+
+"Product/Offer schema for perks (price not required; include
+availability/validity)."
+
+This is a sample code demonstrate brief idea about that,
 
 ---
 
-Then I need you to do following tasks in order
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
-- Create new API routes and handlers group dedicated to get dashboard analytical data. the folder should be in "src\app\(backend)\routes". It should includes routes.ts, index.ts, handlers.ts like in all other route groups.
+// Your function to fetch perk data
+async function getPerk(category: string, slug: string) {
+// Fetch from your database
+const perk = await db.perk.findUnique({
+where: { slug, category },
+include: { vendor: true, category: true }
+});
 
-- Simultanously create appropiate zod schemas file for help that route group and client side operations as I have done for other entities.
+if (!perk) return null;
+return perk;
+}
 
-- Prepare all queries & components required for rendering process on dashboard page in path "src\features", new folder called "overview" or "metrics" (any most suitable).
+// Generate JSON-LD schema
+function generatePerkSchema(perk: any) {
+return {
+'@context': 'https://schema.org',
+'@type': 'Offer',
+name: perk.title,
+description: perk.shortDescription,
+url: `https://yourdomain.com/perks/${perk.category.slug}/${perk.slug}`,
+offeredBy: {
+'@type': 'Organization',
+name: perk.vendorName,
+logo: perk.logoUrl
+},
+availability: perk.status === 'Active'
+? 'https://schema.org/InStock'
+: 'https://schema.org/OutOfStock',
+...(perk.startDate && { validFrom: perk.startDate }),
+...(perk.endDate && { validThrough: perk.endDate }),
+...(perk.bannerUrl && { image: perk.bannerUrl })
+};
+}
 
-- These are the main overview metrics i need to render on dashboard page,
+// Metadata function (runs server-side)
+export async function generateMetadata({
+params
+}: {
+params: { category: string; slug: string }
+}): Promise<Metadata> {
+const perk = await getPerk(params.category, params.slug);
 
-* Total deals live (Active)
-* Number of leads collected (time-range filter)
-* Recent submissions / top-performing perks (depends on leads)
-* Any other 1 metric you suggest.
+if (!perk) return {};
 
-- You must use this following metric card for UI.
-  "src\components\ui\section-card.tsx" (Customize it according to purpose. but keep UI same as it is)
+const schema = generatePerkSchema(perk);
+
+return {
+title: perk.seoTitle || perk.title,
+description: perk.metaDescription || perk.shortDescription,
+openGraph: {
+title: perk.seoTitle || perk.title,
+description: perk.metaDescription || perk.shortDescription,
+images: perk.ogImage || perk.bannerUrl,
+type: 'website',
+},
+// JSON-LD Schema
+other: {
+'script:ld+json': JSON.stringify(schema)
+}
+};
+}
+
+// Page component
+export default async function PerkDetailPage({
+params
+}: {
+params: { category: string; slug: string }
+}) {
+const perk = await getPerk(params.category, params.slug);
+
+if (!perk) notFound();
+
+return (
+<div>
+{/_ Your perk detail UI _/}
+<h1>{perk.title}</h1>
+{/_ ... rest of your content _/}
+</div>
+);
+}
+
+---
+
+And make me those pages in wireframe design, I can apply the styles manually later.
+
+- It must use server side rpc client as I done in current landing page pattern.

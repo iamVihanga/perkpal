@@ -8,6 +8,7 @@ interface WireframeNavbarProps {
 export function WireframeNavbar({ currentPage }: WireframeNavbarProps) {
   const navItems = [
     { href: "/", label: "Home" },
+    { href: "/perks", label: "Perks" },
     { href: "/about", label: "About" },
     { href: "/contact", label: "Contact" },
     { href: "/faq", label: "FAQ" },
