@@ -36,8 +36,9 @@ export function ExportLeadsButton({
       onClick={handleExport}
       disabled={isExporting}
       className={className}
+      loading={isExporting}
+      icon={<Download />}
     >
-      <Download className="h-4 w-4 mr-2" />
       {children || (isExporting ? "Exporting..." : "Export CSV")}
     </Button>
   );

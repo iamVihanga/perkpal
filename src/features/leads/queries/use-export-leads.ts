@@ -2,8 +2,6 @@ import { useMutation } from "@tanstack/react-query";
 import { useId } from "react";
 import { toast } from "sonner";
 
-import { getClient } from "@/lib/rpc/client";
-
 interface ExportLeadsParams {
   sort?: "asc" | "desc";
 }
@@ -12,29 +10,33 @@ export const useExportLeads = () => {
   const toastId = useId();
 
   const mutation = useMutation({
-    mutationFn: async (params: ExportLeadsParams = {}) => {
-      const rpcClient = await getClient();
+    mutationFn: async (
+      params: ExportLeadsParams = {}
+    ): Promise<{ filename: string; recordCount: number }> => {
+      // Build query string
+      const queryParams = new URLSearchParams();
+      if (params.sort) {
+        queryParams.append("sort", params.sort);
+      }
 
-      const response = await rpcClient.api.leads.export.$get({
-        query: {
-          ...(params.sort && { sort: params.sort })
-        }
+      const url = `/api/leads/export${
+        queryParams.toString() ? `?${queryParams.toString()}` : ""
+      }`;
+
+      const response = await fetch(url, {
+        method: "GET",
+        credentials: "include"
       });
 
       if (!response.ok) {
-        throw new Error("Failed to export leads");
+        const errorData = await response
+          .json()
+          .catch(() => ({ message: "Failed to export leads" }));
+        throw new Error(errorData.message || "Failed to export leads");
       }
 
-      // Get the CSV content as text
-      const csvContent = await response.text();
-
-      // Create a blob and download it
-      const blob = new Blob([csvContent], { type: "text/csv" });
-      const url = window.URL.createObjectURL(blob);
-
-      // Create download link
-      const link = document.createElement("a");
-      link.href = url;
+      // Get CSV content as blob
+      const blob = await response.blob();
 
       // Get filename from response headers or generate one
       const contentDisposition = response.headers.get("Content-Disposition");
@@ -42,15 +44,23 @@ export const useExportLeads = () => {
         contentDisposition?.match(/filename="(.+)"/)?.[1] ||
         `leads-export-${new Date().toISOString().split("T")[0]}.csv`;
 
+      // Create download link
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
       link.download = filename;
       document.body.appendChild(link);
       link.click();
 
       // Cleanup
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      window.URL.revokeObjectURL(downloadUrl);
 
-      return { filename, recordCount: csvContent.split("\n").length - 1 };
+      // Estimate record count from CSV content (approximate)
+      const csvText = await blob.text();
+      const recordCount = Math.max(0, csvText.split("\n").length - 1); // -1 for header row
+
+      return { filename, recordCount };
     },
     onMutate: () => {
       toast.loading("Preparing export...", {

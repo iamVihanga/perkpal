@@ -8,7 +8,6 @@ import type { AppRouteHandler } from "@/lib/types/server";
 import type {
   CreateLeadRoute,
   DeleteLeadRoute,
-  ExportCsvRoute,
   GetOneLeadRoute,
   ListLeadsRoute
 } from "./routes";
@@ -380,109 +379,6 @@ export const remove: AppRouteHandler<DeleteLeadRoute> = async (c) => {
     await db.delete(leads).where(eq(leads.id, leadId));
 
     return c.json({ message: "Lead successfully deleted" }, HttpStatusCodes.OK);
-  } catch (error) {
-    return c.json(
-      {
-        message:
-          (error as Error).message || HttpStatusPhrases.INTERNAL_SERVER_ERROR
-      },
-      HttpStatusCodes.INTERNAL_SERVER_ERROR
-    );
-  }
-};
-
-// Export leads as CSV handler
-export const exportCsv: AppRouteHandler<ExportCsvRoute> = async (c) => {
-  try {
-    const session = c.get("session");
-    const user = c.get("user");
-
-    if (!session) {
-      return c.json(
-        { message: HttpStatusPhrases.UNAUTHORIZED },
-        HttpStatusCodes.UNAUTHORIZED
-      );
-    }
-
-    if (user?.role !== "admin") {
-      return c.json(
-        { message: HttpStatusPhrases.FORBIDDEN },
-        HttpStatusCodes.FORBIDDEN
-      );
-    }
-
-    const { sort } = c.req.valid("query");
-
-    // Export ALL leads - ignore filters to get complete dataset
-    const whereConditions = undefined; // Remove filtering to get all leads
-
-    // Get all leads without pagination for export
-    const leadEntries = await db.query.leads.findMany({
-      orderBy: (fields) => {
-        return sort === "asc"
-          ? [asc(fields.createdAt)]
-          : [desc(fields.createdAt)];
-      },
-      where: whereConditions,
-      with: {
-        perk: {
-          columns: {
-            id: true,
-            title: true,
-            slug: true,
-            vendorName: true
-          }
-        }
-      }
-    });
-
-    // Generate CSV headers
-    const csvHeaders = [
-      "Lead ID",
-      "Perk Title",
-      "Perk Vendor",
-      "Submission Date",
-      "IP Address",
-      "Form Data"
-    ];
-
-    // Generate CSV rows
-    const csvRows = leadEntries.map((lead) => {
-      const formData = lead.data
-        ? Object.entries(lead.data)
-            .map(
-              ([key, value]) =>
-                `${key}: ${Array.isArray(value) ? value.join(", ") : value}`
-            )
-            .join(" | ")
-        : "";
-
-      return [
-        lead.id,
-        lead.perk?.title || "Unknown Perk",
-        lead.perk?.vendorName || "-",
-        lead.createdAt ? new Date(lead.createdAt).toLocaleString() : "-",
-        lead.ip || "-",
-        `"${formData}"`
-      ];
-    });
-
-    // Create CSV content
-    const csvContent = [
-      csvHeaders.join(","),
-      ...csvRows.map((row) => row.join(","))
-    ].join("\n");
-
-    // Generate filename with timestamp
-    const timestamp = new Date().toISOString().split("T")[0];
-    const filename = `leads-export-${timestamp}.csv`;
-
-    // Set CSV response headers
-    c.header("Content-Type", "text/csv");
-    c.header("Content-Disposition", `attachment; filename="${filename}"`);
-    c.header("Cache-Control", "no-cache");
-
-    return c.text(csvContent);
   } catch (error) {
     return c.json(
       {

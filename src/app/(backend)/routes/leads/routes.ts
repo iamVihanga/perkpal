@@ -11,7 +11,6 @@ import {
 import {
   insertLeadSchema,
   leadsQueryParamsSchema,
-  leadsExportQueryParamsSchema,
   selectLeadSchema
 } from "@/lib/zod/leads.zod";
 
@@ -148,45 +147,8 @@ export const remove = createRoute({
   }
 });
 
-// Export leads as CSV route definition
-export const exportCsv = createRoute({
-  tags,
-  summary: "Export leads as CSV",
-  path: "/export",
-  method: "get",
-  request: {
-    query: leadsExportQueryParamsSchema
-  },
-  responses: {
-    [HttpStatusCodes.OK]: {
-      content: {
-        "text/csv": {
-          schema: {
-            type: "string",
-            format: "binary"
-          }
-        }
-      },
-      description: "CSV file containing leads data"
-    },
-    [HttpStatusCodes.UNAUTHORIZED]: jsonContent(
-      errorMessageSchema,
-      "Unauthorized access"
-    ),
-    [HttpStatusCodes.FORBIDDEN]: jsonContent(
-      errorMessageSchema,
-      "Forbidden access"
-    ),
-    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
-      errorMessageSchema,
-      "Internal server error"
-    )
-  }
-});
-
 // Route type definitions for handler injection
 export type ListLeadsRoute = typeof list;
 export type GetOneLeadRoute = typeof getOne;
 export type CreateLeadRoute = typeof create;
 export type DeleteLeadRoute = typeof remove;
-export type ExportCsvRoute = typeof exportCsv;

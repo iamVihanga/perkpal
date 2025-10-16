@@ -13,15 +13,6 @@ export const leadsQueryParamsSchema = z.object({
 
 export type LeadsQueryParamsSchema = z.infer<typeof leadsQueryParamsSchema>;
 
-// Export-specific query params schema (only sort parameter)
-export const leadsExportQueryParamsSchema = z.object({
-  sort: z.enum(["asc", "desc"]).optional().default("desc")
-});
-
-export type LeadsExportQueryParamsSchema = z.infer<
-  typeof leadsExportQueryParamsSchema
->;
-
 export const leadBaseSchema = z.object({
   id: z.string(),
 

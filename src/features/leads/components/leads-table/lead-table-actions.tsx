@@ -24,7 +24,7 @@ export function LeadTableActions() {
         showClearButton={false}
       />
 
-      <ExportLeadsButton sort={sort as "asc" | "desc"} />
+      <ExportLeadsButton sort={sort as "asc" | "desc"} className="h-10" />
 
       <DataTableResetFilter
         isFilterActive={isAnyFilterActive}
