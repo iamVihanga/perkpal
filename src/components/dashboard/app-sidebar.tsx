@@ -8,7 +8,6 @@ import {
   IconBrowser,
   IconNews,
   IconUsersGroup,
-  IconLink,
   IconUserCog
 } from "@tabler/icons-react";
 
@@ -44,9 +43,8 @@ const data = {
       url: "/dashboard/journals",
       icon: IconNews,
       items: [
-        { title: "All Posts", url: "/dashboard/journals" },
-        { title: "Add New Post", url: "/dashboard/journals/new" },
-        { title: "Tags", url: "/dashboard/journals/tags" }
+        { title: "All Posts", url: "/dashboard/journal" },
+        { title: "Add New Post", url: "/dashboard/journal/new" }
       ]
     },
     {
@@ -61,14 +59,9 @@ const data = {
       ]
     },
     {
-      title: "All Leads",
+      title: "Manage Leads",
       url: "/dashboard/leads",
       icon: IconUsersGroup
-    },
-    {
-      title: "Partner Requests",
-      url: "/dashboard/partner-requests",
-      icon: IconLink
     }
   ],
   navFrontend: [
@@ -86,20 +79,20 @@ const data = {
           url: "/dashboard/site-settings/about-us"
         },
         {
-          title: "Partner with Us",
-          url: "/dashboard/site-settings/partner-with-us"
-        },
-        {
-          title: "ToS/Privacy",
-          url: "/dashboard/site-settings/tos-privacy"
-        },
-        {
           title: "Contact",
           url: "/dashboard/site-settings/contact"
         },
         {
-          title: "Journal",
-          url: "/dashboard/site-settings/journal"
+          title: "FAQ",
+          url: "/dashboard/site-settings/faq"
+        },
+        {
+          title: "Terms of Services",
+          url: "/dashboard/site-settings/tos"
+        },
+        {
+          title: "Privacy Policy",
+          url: "/dashboard/site-settings/privacy-policy"
         }
       ]
     },

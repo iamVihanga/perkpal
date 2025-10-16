@@ -117,8 +117,8 @@ export const perkBaseSchema = z.object({
   leadFormSlug: z.string().nullable(),
   leadFormConfig: leadFormConfigSchema.nullable(),
 
-  startDate: z.date(),
-  endDate: z.date(),
+  startDate: z.union([z.date(), z.string().datetime()]).optional().nullable(),
+  endDate: z.union([z.date(), z.string().datetime()]).optional().nullable(),
 
   categoryId: z.string().nullable(),
   subcategoryId: z.string().nullable(),
@@ -127,10 +127,14 @@ export const perkBaseSchema = z.object({
   displayOrder: z.number().int().min(0).default(0),
   status: z.string().default("active"),
 
+  keywords: z.string().array().default([]),
+
   // SEO Fields
   seoTitle: z.string().nullable(),
   seoDescription: z.string().nullable(),
   ogImageId: z.string().nullable(),
+
+  canonicalUrl: z.string().nullable(),
 
   createdAt: z.date().nullable(),
   updatedAt: z.date().nullable()
@@ -170,26 +174,19 @@ export const createPerkSchema = perkBaseSchema
       if (data.redemptionMethod === "coupon_code" && !data.couponCode) {
         return false;
       }
+
       if (
         data.redemptionMethod === "form_submission" &&
         (!data.leadFormSlug || !data.leadFormConfig)
       ) {
         return false;
       }
+
       return true;
     },
     {
       message:
         "Required redemption fields must be provided based on redemption method"
-    }
-  )
-  .refine(
-    (data) => {
-      // Validate end date is after start date
-      return data.endDate > data.startDate;
-    },
-    {
-      message: "End date must be after start date"
     }
   );
 
@@ -237,12 +234,20 @@ export const updatePerkSchema = perkBaseSchema
     (data) => {
       // Validate end date is after start date if both are provided
       if (data.startDate && data.endDate) {
-        return data.endDate > data.startDate;
+        const startDate =
+          typeof data.startDate === "string"
+            ? new Date(data.startDate)
+            : data.startDate;
+        const endDate =
+          typeof data.endDate === "string"
+            ? new Date(data.endDate)
+            : data.endDate;
+        return endDate > startDate;
       }
       return true;
     },
     {
-      message: "End date must be after start date"
+      message: "End date must be after start date when both dates are provided"
     }
   );
 

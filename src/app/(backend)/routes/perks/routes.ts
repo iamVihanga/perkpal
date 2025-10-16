@@ -3,13 +3,19 @@ import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
 import { z } from "zod";
 
-import { errorMessageSchema, getPaginatedSchema } from "@/lib/server/helpers";
+import {
+  errorMessageSchema,
+  getPaginatedSchema,
+  stringIdParamSchema
+} from "@/lib/server/helpers";
 import {
   selectPerkSchema,
   perksQueryParamsSchema,
   getSinglePerkQuerySchema,
-  createPerkSchema
+  createPerkSchema,
+  updatePerkSchema
 } from "@/lib/zod/perks.zod";
+import { reorderItemsSchema } from "@/lib/helpers";
 
 const tags: string[] = ["Perks"];
 
@@ -96,7 +102,116 @@ export const create = createRoute({
   }
 });
 
+// Update perk route definition
+export const update = createRoute({
+  tags,
+  summary: "Update an existing perk",
+  path: "/:id",
+  method: "put",
+  request: {
+    params: stringIdParamSchema,
+    body: jsonContentRequired(
+      updatePerkSchema,
+      "Update perk request body payload"
+    )
+  },
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      selectPerkSchema,
+      "The updated perk with populated fields"
+    ),
+    [HttpStatusCodes.BAD_REQUEST]: jsonContent(
+      errorMessageSchema,
+      "Invalid request payload"
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      errorMessageSchema,
+      "Category not found"
+    ),
+    [HttpStatusCodes.UNAUTHORIZED]: jsonContent(
+      errorMessageSchema,
+      "Unauthorized access"
+    ),
+    [HttpStatusCodes.FORBIDDEN]: jsonContent(
+      errorMessageSchema,
+      "Forbidden access"
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorMessageSchema,
+      "Internal server error"
+    )
+  }
+});
+
+// Delete perks route definition
+export const remove = createRoute({
+  tags,
+  summary: "Delete a perk",
+  path: "/:id",
+  method: "delete",
+  request: {
+    params: stringIdParamSchema
+  },
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      errorMessageSchema,
+      "Perk successfully deleted"
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      errorMessageSchema,
+      "Perk not found"
+    ),
+    [HttpStatusCodes.UNAUTHORIZED]: jsonContent(
+      errorMessageSchema,
+      "Unauthorized access"
+    ),
+    [HttpStatusCodes.FORBIDDEN]: jsonContent(
+      errorMessageSchema,
+      "Forbidden access"
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorMessageSchema,
+      "Internal server error"
+    )
+  }
+});
+
+export const reorder = createRoute({
+  tags,
+  summary: "Reorder perks",
+  method: "patch",
+  path: "/reorder",
+  request: {
+    body: jsonContentRequired(reorderItemsSchema, "Reorder perks")
+  },
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      errorMessageSchema, // For send success message
+      "Perks reordered successfully"
+    ),
+    [HttpStatusCodes.UNAUTHORIZED]: jsonContent(
+      errorMessageSchema,
+      "Unauthorized access"
+    ),
+    [HttpStatusCodes.FORBIDDEN]: jsonContent(
+      errorMessageSchema,
+      "Forbidden access"
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorMessageSchema,
+      "Failed to reorder perks"
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      errorMessageSchema,
+      "Perks not found"
+    )
+  }
+});
+
 // Route Type Definitions
 export type ListPerksRouteT = typeof list;
 export type GetPerkRouteT = typeof getOne;
 export type CreatePerkRouteT = typeof create;
+export type UpdatePerkRouteT = typeof update;
+export type ReorderPerksRouteT = typeof reorder;
+export type RemovePerksRouteT = typeof remove;

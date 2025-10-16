@@ -64,10 +64,8 @@ export const perks = pgTable(
     leadFormSlug: text("lead_form_slug").unique(),
     leadFormConfig: jsonb("lead_form_config").$type<FormFieldConfigT>(),
 
-    startDate: timestamp("start_date").notNull().defaultNow(),
-    endDate: timestamp("end_date")
-      .notNull()
-      .default(sql`CURRENT_TIMESTAMP + INTERVAL '30 days'`),
+    startDate: timestamp("start_date"),
+    endDate: timestamp("end_date"),
 
     // Category and Subcategory Relationships
     categoryId: text("category_id").references(() => categories.id, {
@@ -77,9 +75,15 @@ export const perks = pgTable(
       onDelete: "set null"
     }),
 
+    keywords: text("keywords")
+      .array()
+      .default(sql`ARRAY[]::text[]`),
+
     isFeatured: boolean("is_featured").notNull().default(false),
     status: text("status").notNull().default("active"),
     displayOrder: integer("display_order").default(0),
+
+    canonicalUrl: text("canonical_url"),
 
     ...seoFields,
     ...timestamps
@@ -113,7 +117,6 @@ export const perks = pgTable(
 
     // Constraints
     check("perks_display_order_check", sql`${t.displayOrder} >= 0`),
-    check("perks_dates_check", sql`${t.endDate} > ${t.startDate}`),
     check(
       "perks_status_check",
       sql`${t.status} IN ('active', 'inactive', 'expired', 'draft')`
