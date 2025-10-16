@@ -1,73 +1,29 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { WireframeNavbar } from "@/components/layout/wireframe-navbar";
+// import { CldImage } from "next-cloudinary";
+import { ImageIcon, MapPin, Calendar, ExternalLink, Clock } from "lucide-react";
 import { getClient } from "@/lib/rpc/server";
 import {
   generatePerkSchema,
   generatePerkBreadcrumbSchema
 } from "@/lib/seo/perk-schema";
 
+import { Badge } from "@/components/ui/badge";
+import { WireframeNavbar } from "@/components/wireframes/wireframe-navbar";
+import { IDImageViewer } from "@/modules/media/components/viewer-by-id";
+
 // ISR: Revalidate every 1 hour for perk details
 export const revalidate = 3600;
+
+// Disable static generation for now due to RPC client using cookies
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: Promise<{
     categorySlug: string;
     perkSlug: string;
   }>;
-}
-
-// Generate static params for perks
-export async function generateStaticParams({
-  params
-}: {
-  params: Promise<{ categorySlug: string }>;
-}) {
-  try {
-    const rpcClient = await getClient();
-
-    // First, get the category to get its ID
-    const categoriesResponse = await rpcClient.api.categories.$get({
-      query: { limit: "100" }
-    });
-
-    if (!categoriesResponse.ok) {
-      return [];
-    }
-
-    const { categorySlug } = await params;
-    const categoriesData = await categoriesResponse.json();
-    const category = categoriesData.data?.find(
-      (cat) => cat.slug === categorySlug
-    );
-
-    if (!category) {
-      return [];
-    }
-
-    // Then get perks for this category
-    const perksResponse = await rpcClient.api.perks.$get({
-      query: {
-        categoryId: category.id,
-        limit: "100"
-      }
-    });
-
-    if (!perksResponse.ok) {
-      return [];
-    }
-
-    const perksData = await perksResponse.json();
-    return (
-      perksData.data?.map((perk) => ({
-        perkSlug: perk.slug
-      })) || []
-    );
-  } catch (error) {
-    console.error("Error generating static params for perks:", error);
-    return [];
-  }
 }
 
 // Fetch perk data
@@ -216,20 +172,45 @@ export default async function PerkDetailPage({ params }: PageProps) {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Perk Image */}
               <div className="lg:col-span-1">
-                <div className="w-full h-64 bg-gray-200 border border-gray-300 rounded flex items-center justify-center">
-                  {perk.bannerImage?.url ? (
-                    <span className="text-gray-500">Main Perk Image</span>
+                <div className="relative w-full h-64 bg-gray-200 border border-gray-300 rounded overflow-hidden">
+                  {perk.bannerImage?.publicId || perk.bannerImage?.url ? (
+                    <IDImageViewer
+                      url={perk.bannerImage?.url}
+                      width={600}
+                      className="w-full h-full object-cover"
+                      height={400}
+                      alt={perk.title}
+                    />
                   ) : (
-                    <span className="text-gray-500">No Image Available</span>
+                    <div className="w-full h-full flex items-center justify-center">
+                      <div className="text-center text-gray-500">
+                        <ImageIcon className="w-12 h-12 mx-auto mb-2" />
+                        <span className="text-sm">No Image Available</span>
+                      </div>
+                    </div>
                   )}
                 </div>
 
                 {/* Vendor Logo */}
-                {perk.logoImage?.url && (
-                  <div className="mt-4 w-24 h-16 bg-gray-100 border border-gray-300 rounded flex items-center justify-center">
-                    <span className="text-xs text-gray-500">Vendor Logo</span>
-                  </div>
-                )}
+                {perk.logoImage &&
+                  (perk.logoImage.publicId || perk.logoImage.url) && (
+                    <div className="mt-4 flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded">
+                      <div className="relative w-12 h-12 bg-white border border-gray-200 rounded overflow-hidden flex-shrink-0">
+                        <IDImageViewer
+                          url={perk.logoImage.url}
+                          alt={`${perk.vendorName} logo`}
+                          fill
+                          className="object-cover w-full h-full"
+                        />
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {perk.vendorName}
+                        </div>
+                        <div className="text-xs text-gray-500">Vendor</div>
+                      </div>
+                    </div>
+                  )}
               </div>
 
               {/* Perk Details */}
@@ -237,23 +218,34 @@ export default async function PerkDetailPage({ params }: PageProps) {
                 <div className="space-y-4">
                   {/* Title and Status */}
                   <div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                    <h1 className="text-3xl font-bold text-gray-900 mb-3">
                       {perk.title}
                     </h1>
-                    <div className="flex items-center gap-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          perk.status === "Active"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <Badge
+                        variant={
+                          perk.status === "active" ? "default" : "destructive"
+                        }
+                        className="text-sm"
                       >
                         {perk.status}
-                      </span>
+                      </Badge>
                       {perk.location && (
-                        <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                        <Badge
+                          variant="outline"
+                          className="flex items-center gap-1"
+                        >
+                          <MapPin className="w-3 h-3" />
                           {perk.location}
-                        </span>
+                        </Badge>
+                      )}
+                      {perk.isFeatured && (
+                        <Badge
+                          variant="secondary"
+                          className="bg-yellow-100 text-yellow-800"
+                        >
+                          Featured
+                        </Badge>
                       )}
                     </div>
                   </div>
@@ -320,20 +312,24 @@ export default async function PerkDetailPage({ params }: PageProps) {
                   {/* Categories */}
                   <div className="flex flex-wrap gap-2">
                     {perk.category && (
-                      <Link
-                        href={`/perks/${perk.category.slug}`}
-                        className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200"
-                      >
-                        {perk.category.name}
-                      </Link>
+                      <Badge variant="outline" asChild>
+                        <Link
+                          href={`/perks/${perk.category.slug}`}
+                          className="hover:bg-blue-50"
+                        >
+                          Category: {perk.category.name}
+                        </Link>
+                      </Badge>
                     )}
                     {perk.subcategory && (
-                      <Link
-                        href={`/perks/${categorySlug}?subcategoryId=${perk.subcategory.id}`}
-                        className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm hover:bg-green-200"
-                      >
-                        {perk.subcategory.name}
-                      </Link>
+                      <Badge variant="outline" asChild>
+                        <Link
+                          href={`/perks/${categorySlug}?subcategoryId=${perk.subcategory.id}`}
+                          className="hover:bg-green-50"
+                        >
+                          {perk.subcategory.name}
+                        </Link>
+                      </Badge>
                     )}
                   </div>
                 </div>
@@ -370,38 +366,85 @@ export default async function PerkDetailPage({ params }: PageProps) {
               )}
 
               {/* Redemption Information */}
-              <div className="border border-gray-300 p-4 rounded">
-                <h2 className="text-xl font-semibold mb-3">How to Redeem</h2>
-                <div className="space-y-3">
-                  <div>
-                    <strong>Method:</strong>{" "}
-                    {perk.redemptionMethod?.replace("_", " ").toUpperCase()}
+              <div className="border border-gray-300 p-4 rounded bg-gradient-to-br from-blue-50 to-indigo-50">
+                <h2 className="text-xl font-semibold mb-3 flex items-center">
+                  <Clock className="w-5 h-5 mr-2 text-blue-600" />
+                  How to Redeem
+                </h2>
+
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Badge variant="outline" className="text-sm">
+                      {perk.redemptionMethod?.replace("_", " ").toUpperCase()}
+                    </Badge>
                   </div>
 
                   {perk.redemptionMethod === "affiliate_link" &&
                     perk.affiliateLink && (
-                      <div>
-                        <strong>Link:</strong>
-                        <a
-                          href={perk.affiliateLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline ml-1"
-                        >
-                          Visit Offer Page
-                        </a>
+                      <div className="bg-white p-4 rounded border">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium text-gray-900 mb-1">
+                              Visit Partner Website
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              Click the link below to access this offer
+                            </p>
+                          </div>
+                          <Link
+                            href={perk.affiliateLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                            Get Offer
+                          </Link>
+                        </div>
                       </div>
                     )}
 
                   {perk.redemptionMethod === "coupon_code" &&
                     perk.couponCode && (
-                      <div>
-                        <strong>Coupon Code:</strong>
-                        <code className="ml-2 px-2 py-1 bg-gray-100 rounded font-mono">
-                          {perk.couponCode}
-                        </code>
+                      <div className="bg-white p-4 rounded border">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium text-gray-900 mb-1">
+                              Use Coupon Code
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              Copy this code and use it at checkout
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <code className="px-3 py-2 bg-gray-100 rounded font-mono text-lg font-bold">
+                              {perk.couponCode}
+                            </code>
+                            <span className="text-sm text-gray-500">
+                              Click to copy
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     )}
+
+                  {perk.redemptionMethod === "form_submission" && (
+                    <div className="bg-white p-4 rounded border">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium text-gray-900 mb-1">
+                            Fill Submission Form
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            Complete the form to access this offer
+                          </p>
+                        </div>
+                        <button className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                          Fill Form
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -409,28 +452,65 @@ export default async function PerkDetailPage({ params }: PageProps) {
             {/* Sidebar */}
             <div className="lg:col-span-1 space-y-6">
               {/* Quick Actions */}
-              <div className="border border-gray-300 p-4 rounded">
+              <div className="border border-gray-300 p-4 rounded bg-white">
                 <h3 className="font-semibold mb-3">Quick Actions</h3>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {perk.redemptionMethod === "form_submission" && (
-                    <button className="w-full py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    <button className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
                       Fill Submission Form
                     </button>
                   )}
                   {perk.redemptionMethod === "affiliate_link" &&
                     perk.affiliateLink && (
-                      <a
+                      <Link
                         href={perk.affiliateLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="block w-full py-2 px-4 bg-green-600 text-white rounded hover:bg-green-700 text-center"
+                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                       >
+                        <ExternalLink className="w-4 h-4" />
                         Get This Offer
-                      </a>
+                      </Link>
                     )}
-                  <button className="w-full py-2 px-4 border border-gray-300 rounded hover:bg-gray-50">
+                  <button className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 text-gray-800 border border-gray-300 rounded-md hover:bg-gray-200 transition-colors">
                     Share This Perk
                   </button>
+                </div>
+              </div>
+
+              {/* Location & Availability */}
+              <div className="border border-gray-300 p-4 rounded bg-white">
+                <h3 className="font-semibold mb-3">Availability</h3>
+                <div className="space-y-3">
+                  {perk.location && (
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm">{perk.location}</span>
+                    </div>
+                  )}
+
+                  {(perk.startDate || perk.endDate) && (
+                    <div className="space-y-2">
+                      {perk.startDate && (
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-gray-500" />
+                          <span className="text-sm">
+                            Valid from:{" "}
+                            {new Date(perk.startDate).toLocaleDateString()}
+                          </span>
+                        </div>
+                      )}
+                      {perk.endDate && (
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-gray-500" />
+                          <span className="text-sm">
+                            Valid until:{" "}
+                            {new Date(perk.endDate).toLocaleDateString()}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { WireframeNavbar } from "@/components/layout/wireframe-navbar";
+import { WireframeNavbar } from "@/components/wireframes";
 
 export default function PerksNotFound() {
   return (

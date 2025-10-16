@@ -1,7 +1,10 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { WireframeNavbar } from "@/components/layout/wireframe-navbar";
+import { WireframeNavbar } from "@/components/wireframes/wireframe-navbar";
+import { WireframeCategoryPerksFilters } from "@/components/wireframes/wireframe-category-perks-filters";
+import { WireframePerkCard } from "@/components/wireframes/wireframe-perk-card";
+import { WireframePagination } from "@/components/wireframes/wireframe-pagination";
 import { getClient } from "@/lib/rpc/server";
 import { generateCategorySchema } from "@/lib/seo/perk-schema";
 
@@ -277,87 +280,19 @@ export default async function CategoryPerksPage({
             </div>
           )}
 
-          {/* Filters Section - Wireframe */}
-          <div className="mb-8 border border-gray-300 p-4 rounded">
-            <h2 className="text-lg font-semibold mb-4">Filters</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Search */}
-              <div className="border border-gray-200 p-3 rounded">
-                <label className="block text-sm font-medium mb-1">
-                  Search in {category.name}
-                </label>
-                <div className="text-sm text-gray-600">
-                  Current: {search || "None"}
-                </div>
-              </div>
-
-              {/* Subcategory Filter */}
-              {subcategoriesData.data && subcategoriesData.data.length > 0 && (
-                <div className="border border-gray-200 p-3 rounded">
-                  <label className="block text-sm font-medium mb-1">
-                    Subcategory
-                  </label>
-                  <div className="text-sm text-gray-600">
-                    {subcategoriesData.data.find((s) => s.id === subcategoryId)
-                      ?.name || "All"}
-                  </div>
-                </div>
-              )}
-
-              {/* Location Filter */}
-              <div className="border border-gray-200 p-3 rounded">
-                <label className="block text-sm font-medium mb-1">
-                  Location
-                </label>
-                <div className="text-sm text-gray-600">
-                  {location || "All Locations"}
-                </div>
-              </div>
-
-              {/* Sort */}
-              <div className="border border-gray-200 p-3 rounded">
-                <label className="block text-sm font-medium mb-1">Sort</label>
-                <div className="text-sm text-gray-600">
-                  {sort === "asc" ? "Oldest First" : "Newest First"}
-                </div>
-              </div>
-            </div>
-
-            {/* Active Filters */}
-            {(search || subcategoryId || location || status) && (
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <h3 className="text-sm font-medium mb-2">Active Filters:</h3>
-                <div className="flex flex-wrap gap-2">
-                  {search && (
-                    <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
-                      Search: {search}
-                    </span>
-                  )}
-                  {subcategoryId && (
-                    <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
-                      Subcategory:{" "}
-                      {
-                        subcategoriesData.data?.find(
-                          (s) => s.id === subcategoryId
-                        )?.name
-                      }
-                    </span>
-                  )}
-                  {location && (
-                    <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
-                      Location: {location}
-                    </span>
-                  )}
-                  <Link
-                    href={`/perks/${categorySlug}`}
-                    className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded hover:bg-red-200"
-                  >
-                    Clear All
-                  </Link>
-                </div>
-              </div>
-            )}
-          </div>
+          {/* Filters Section */}
+          <WireframeCategoryPerksFilters
+            categorySlug={categorySlug}
+            categoryName={category.name}
+            subcategories={subcategoriesData.data || []}
+            currentFilters={{
+              search: search || "",
+              subcategoryId: subcategoryId || "",
+              location: location || "",
+              status: status || "",
+              sort: sort || "desc"
+            }}
+          />
 
           {/* Results Summary */}
           <div className="mb-6 flex justify-between items-center">
@@ -372,70 +307,10 @@ export default async function CategoryPerksPage({
             </div>
           </div>
 
-          {/* Perks Grid - Wireframe */}
+          {/* Perks Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
             {perksData.data?.map((perk) => (
-              <div key={perk.id} className="border border-gray-300 p-4 rounded">
-                {/* Perk Image Placeholder */}
-                <div className="w-full h-32 bg-gray-200 border border-gray-300 mb-3 flex items-center justify-center">
-                  <span className="text-gray-500 text-sm">
-                    {perk.bannerImage?.url ? "Image" : "No Image"}
-                  </span>
-                </div>
-
-                {/* Perk Info */}
-                <div className="space-y-2">
-                  <h3 className="font-semibold text-lg leading-tight">
-                    <Link
-                      href={`/perks/${categorySlug}/${perk.slug}`}
-                      className="text-blue-600 hover:underline"
-                    >
-                      {perk.title}
-                    </Link>
-                  </h3>
-
-                  <p className="text-sm text-gray-600 line-clamp-2">
-                    {perk.shortDescription ||
-                      perk.longDescription ||
-                      "No description available"}
-                  </p>
-
-                  <div className="text-xs text-gray-500 space-y-1">
-                    <div>Vendor: {perk.vendorName}</div>
-                    <div>
-                      Status:{" "}
-                      <span
-                        className={
-                          perk.status === "Active"
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        {perk.status}
-                      </span>
-                    </div>
-                    {perk.location && <div>Location: {perk.location}</div>}
-                    {perk.endDate && (
-                      <div>
-                        Valid until:{" "}
-                        {new Date(perk.endDate).toLocaleDateString()}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Subcategory Badge */}
-                  {perk.subcategory && (
-                    <div className="mt-2">
-                      <Link
-                        href={`/perks/${categorySlug}?subcategoryId=${perk.subcategory.id}`}
-                        className="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded hover:bg-green-200"
-                      >
-                        {perk.subcategory.name}
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              </div>
+              <WireframePerkCard key={perk.id} perk={perk} />
             ))}
           </div>
 
@@ -502,6 +377,18 @@ export default async function CategoryPerksPage({
                 </div>
               </div>
             </div>
+          )}
+
+          {/* Pagination */}
+          {perksData.meta && perksData.meta.totalCount > Number(limit) && (
+            <WireframePagination
+              currentPage={Number(page)}
+              totalPages={Math.ceil(perksData.meta.totalCount / Number(limit))}
+              totalItems={perksData.meta.totalCount}
+              itemsPerPage={Number(limit)}
+              baseUrl={`/perks/${categorySlug}`}
+              searchParams={urlSearchParams}
+            />
           )}
 
           {/* Category Info Debug */}

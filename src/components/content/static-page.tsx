@@ -6,7 +6,7 @@ import {
   generatePageMetadata,
   generatePageStructuredData
 } from "@/lib/cms/page-data";
-import { WireframeNavbar } from "@/components/layout/wireframe-navbar";
+import { WireframeNavbar } from "@/components/wireframes";
 
 interface StaticPageProps {
   slug: string;

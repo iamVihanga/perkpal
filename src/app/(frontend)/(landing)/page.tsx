@@ -8,7 +8,7 @@ import {
   generatePageMetadata,
   generatePageStructuredData
 } from "@/lib/cms/page-data";
-import { WireframeNavbar } from "@/components/layout/wireframe-navbar";
+import { WireframeNavbar } from "@/components/wireframes";
 
 // ISR: Revalidate every 15 minutes for landing page content
 export const revalidate = 900;

@@ -1,6 +1,9 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { WireframeNavbar } from "@/components/layout/wireframe-navbar";
+import { WireframeNavbar } from "@/components/wireframes/wireframe-navbar";
+import { WireframePerksFilters } from "@/components/wireframes/wireframe-perks-filters";
+import { WireframePerkCard } from "@/components/wireframes/wireframe-perk-card";
+import { WireframePagination } from "@/components/wireframes/wireframe-pagination";
 import { getClient } from "@/lib/rpc/server";
 import { generatePerksListSchema } from "@/lib/seo/perk-schema";
 
@@ -164,54 +167,17 @@ export default async function PerksPage({
             dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
           />
 
-          {/* Filters Section - Wireframe */}
-          <div className="mb-8 border border-gray-300 p-4 rounded">
-            <h2 className="text-lg font-semibold mb-4">Filters</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              {/* Search */}
-              <div className="border border-gray-200 p-3 rounded">
-                <label className="block text-sm font-medium mb-1">Search</label>
-                <div className="text-sm text-gray-600">
-                  Current: {search || "None"}
-                </div>
-              </div>
-
-              {/* Category Filter */}
-              <div className="border border-gray-200 p-3 rounded">
-                <label className="block text-sm font-medium mb-1">
-                  Category
-                </label>
-                <div className="text-sm text-gray-600">
-                  {categoriesData.data?.find((c) => c.id === categoryId)
-                    ?.name || "All"}
-                </div>
-              </div>
-
-              {/* Location Filter */}
-              <div className="border border-gray-200 p-3 rounded">
-                <label className="block text-sm font-medium mb-1">
-                  Location
-                </label>
-                <div className="text-sm text-gray-600">
-                  {location || "All Locations"}
-                </div>
-              </div>
-
-              {/* Status Filter */}
-              <div className="border border-gray-200 p-3 rounded">
-                <label className="block text-sm font-medium mb-1">Status</label>
-                <div className="text-sm text-gray-600">{status || "All"}</div>
-              </div>
-
-              {/* Sort */}
-              <div className="border border-gray-200 p-3 rounded">
-                <label className="block text-sm font-medium mb-1">Sort</label>
-                <div className="text-sm text-gray-600">
-                  {sort === "asc" ? "Oldest First" : "Newest First"}
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* Filters Section */}
+          <WireframePerksFilters
+            categories={categoriesData.data || []}
+            currentFilters={{
+              search: search || "",
+              categoryId: categoryId || "",
+              location: location || "",
+              status: status || "",
+              sort: sort || "desc"
+            }}
+          />
 
           {/* Results Summary */}
           <div className="mb-6 flex justify-between items-center">
@@ -226,72 +192,10 @@ export default async function PerksPage({
             </div>
           </div>
 
-          {/* Perks Grid - Wireframe */}
+          {/* Perks Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
             {perksData.data?.map((perk) => (
-              <div key={perk.id} className="border border-gray-300 p-4 rounded">
-                {/* Perk Image Placeholder */}
-                <div className="w-full h-32 bg-gray-200 border border-gray-300 mb-3 flex items-center justify-center">
-                  <span className="text-gray-500 text-sm">
-                    {perk.bannerImage?.url ? "Image" : "No Image"}
-                  </span>
-                </div>
-
-                {/* Perk Info */}
-                <div className="space-y-2">
-                  <h3 className="font-semibold text-lg leading-tight">
-                    <Link
-                      href={`/perks/${perk.category?.slug || "uncategorized"}/${
-                        perk.slug
-                      }`}
-                      className="text-blue-600 hover:underline"
-                    >
-                      {perk.title}
-                    </Link>
-                  </h3>
-
-                  <p className="text-sm text-gray-600 line-clamp-2">
-                    {perk.shortDescription ||
-                      perk.longDescription ||
-                      "No description available"}
-                  </p>
-
-                  <div className="text-xs text-gray-500 space-y-1">
-                    <div>Vendor: {perk.vendorName}</div>
-                    <div>
-                      Status:{" "}
-                      <span
-                        className={
-                          perk.status === "Active"
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        {perk.status}
-                      </span>
-                    </div>
-                    {perk.location && <div>Location: {perk.location}</div>}
-                    {perk.endDate && (
-                      <div>
-                        Valid until:{" "}
-                        {new Date(perk.endDate).toLocaleDateString()}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Category Badge */}
-                  {perk.category && (
-                    <div className="mt-2">
-                      <Link
-                        href={`/perks/${perk.category.slug}`}
-                        className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded hover:bg-blue-200"
-                      >
-                        {perk.category.name}
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              </div>
+              <WireframePerkCard key={perk.id} perk={perk} />
             ))}
           </div>
 
@@ -317,42 +221,16 @@ export default async function PerksPage({
             </div>
           )}
 
-          {/* Pagination - Wireframe */}
+          {/* Pagination */}
           {perksData.meta && perksData.meta.totalCount > Number(limit) && (
-            <div className="border border-gray-300 p-4 rounded">
-              <h3 className="font-semibold mb-2">Pagination</h3>
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-600">
-                  Page {page} of{" "}
-                  {Math.ceil(perksData.meta.totalCount / Number(limit))}
-                </div>
-                <div className="flex gap-2">
-                  {Number(page) > 1 && (
-                    <Link
-                      href={`/perks?${new URLSearchParams({
-                        ...urlSearchParams,
-                        page: (Number(page) - 1).toString()
-                      }).toString()}`}
-                      className="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100"
-                    >
-                      Previous
-                    </Link>
-                  )}
-                  {Number(page) <
-                    Math.ceil(perksData.meta.totalCount / Number(limit)) && (
-                    <Link
-                      href={`/perks?${new URLSearchParams({
-                        ...urlSearchParams,
-                        page: (Number(page) + 1).toString()
-                      }).toString()}`}
-                      className="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100"
-                    >
-                      Next
-                    </Link>
-                  )}
-                </div>
-              </div>
-            </div>
+            <WireframePagination
+              currentPage={Number(page)}
+              totalPages={Math.ceil(perksData.meta.totalCount / Number(limit))}
+              totalItems={perksData.meta.totalCount}
+              itemsPerPage={Number(limit)}
+              baseUrl="/perks"
+              searchParams={urlSearchParams}
+            />
           )}
 
           {/* Debug Info */}
@@ -361,7 +239,17 @@ export default async function PerksPage({
             <pre className="text-xs bg-gray-100 p-2 rounded overflow-auto">
               {JSON.stringify(
                 {
-                  searchParams,
+                  searchParams: {
+                    page,
+                    limit,
+                    search,
+                    categoryId,
+                    subcategoryId,
+                    location,
+                    status,
+                    redemptionMethod,
+                    sort
+                  },
                   totalCount: perksData.meta?.totalCount,
                   dataLength: perksData.data?.length
                 },
