@@ -403,7 +403,16 @@ export default async function CategoryPerksPage({
                     slug: category.slug,
                     description: category.description
                   },
-                  searchParams,
+                  searchParams: {
+                    page,
+                    limit,
+                    search,
+                    subcategoryId,
+                    location,
+                    status,
+                    redemptionMethod,
+                    sort
+                  },
                   totalCount: perksData.meta?.totalCount,
                   dataLength: perksData.data?.length,
                   subcategoriesCount: subcategoriesData.data?.length

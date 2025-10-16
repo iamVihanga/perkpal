@@ -173,11 +173,11 @@ export default async function PerkDetailPage({ params }: PageProps) {
               {/* Perk Image */}
               <div className="lg:col-span-1">
                 <div className="relative w-full h-64 bg-gray-200 border border-gray-300 rounded overflow-hidden">
-                  {perk.bannerImage?.publicId || perk.bannerImage?.url ? (
+                  {perk?.bannerImage?.url ? (
                     <IDImageViewer
-                      url={perk.bannerImage?.url}
-                      width={600}
+                      url={perk.bannerImage.url!}
                       className="w-full h-full object-cover"
+                      width={600}
                       height={400}
                       alt={perk.title}
                     />
@@ -192,25 +192,25 @@ export default async function PerkDetailPage({ params }: PageProps) {
                 </div>
 
                 {/* Vendor Logo */}
-                {perk.logoImage &&
-                  (perk.logoImage.publicId || perk.logoImage.url) && (
-                    <div className="mt-4 flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded">
-                      <div className="relative w-12 h-12 bg-white border border-gray-200 rounded overflow-hidden flex-shrink-0">
-                        <IDImageViewer
-                          url={perk.logoImage.url}
-                          alt={`${perk.vendorName} logo`}
-                          fill
-                          className="object-cover w-full h-full"
-                        />
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {perk.vendorName}
-                        </div>
-                        <div className="text-xs text-gray-500">Vendor</div>
-                      </div>
+                {perk.logoImage && perk?.logoImage?.url && (
+                  <div className="mt-4 flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded">
+                    <div className="relative w-12 h-12 bg-white border border-gray-200 rounded overflow-hidden flex-shrink-0">
+                      <IDImageViewer
+                        url={perk.logoImage.url!}
+                        alt={`${perk.vendorName} logo`}
+                        width={50}
+                        height={50}
+                        className="object-cover w-full h-full"
+                      />
                     </div>
-                  )}
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {perk.vendorName}
+                      </div>
+                      <div className="text-xs text-gray-500">Vendor</div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Perk Details */}
