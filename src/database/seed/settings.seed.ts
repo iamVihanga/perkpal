@@ -14,16 +14,29 @@ export async function seedSettings() {
     .values([
       {
         key: "sitemapJson",
-        value: `
-            [
-                {"slug": "/", "title": "Homepage"},
-                {"slug": "about", "title": "About Us"},
-                {"slug": "contact", "title": "Contact Us"},
-                {"slug": "faq", "title": "FAQ"},
-                {"slug": "terms-of-service",  "title": "Terms of Service"},
-                {"slug": "privacy-policy", "title": "Privacy Policy}
-            ]
-        `
+        value: JSON.stringify([
+          {
+            slug: "/",
+            title: "Homepage"
+          },
+          {
+            slug: "about",
+            title: "About Us"
+          },
+          { slug: "contact", title: "Contact Us" },
+          {
+            slug: "faq",
+            title: "FAQ"
+          },
+          {
+            slug: "terms-of-service",
+            title: "Terms of Service"
+          },
+          {
+            slug: "privacy-policy",
+            title: "Privacy Policy"
+          }
+        ])
       },
       {
         key: "robotsTxt",
