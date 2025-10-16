@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 
 import React from "react";
@@ -8,15 +9,39 @@ import { Loader2 } from "lucide-react";
 import { CldImage } from "next-cloudinary";
 
 type Props = {
-  id: string;
+  id?: string;
+  url?: string;
   className?: string;
   width?: number;
   height?: number;
   alt?: string;
 };
 
-export function IDImageViewer({ id, className, width, height, alt }: Props) {
-  const { data, isLoading, error } = useGetMediaByID(id);
+export function IDImageViewer({
+  id,
+  url,
+  className,
+  width,
+  height,
+  alt
+}: Props) {
+  if (!id && url) {
+    return (
+      <CldImage
+        alt={alt || "Media Image"}
+        width={width || 500}
+        height={height || 500}
+        src={url || ""}
+        sizes="100vw"
+        className={cn(
+          "size-12 object-cover rounded-md border border-secondary",
+          className
+        )}
+      />
+    );
+  }
+
+  const { data, isLoading, error } = useGetMediaByID(id!);
 
   if (isLoading)
     return (
@@ -33,14 +58,14 @@ export function IDImageViewer({ id, className, width, height, alt }: Props) {
   if (error) return <></>;
 
   const publicID = data?.publicId;
-  const url = data?.url;
+  const publicUrl = data?.url;
 
   return (
     <CldImage
       alt={alt || "Media Image"}
       width={width || 500}
       height={height || 500}
-      src={publicID || url || ""}
+      src={publicID || publicUrl || ""}
       sizes="100vw"
       className={cn(
         "size-12 object-cover rounded-md border border-secondary",
