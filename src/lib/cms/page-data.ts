@@ -7,10 +7,12 @@ import {
 } from "@/lib/zod/pages.zod";
 import { Metadata } from "next";
 
+export type SectionsWithFieldsT = SectionsSelectT & {
+  fields: ContentFieldsSelectT[];
+};
+
 export interface PageWithContent extends PagesSelectT {
-  sections: (SectionsSelectT & {
-    fields: ContentFieldsSelectT[];
-  })[];
+  sections: SectionsWithFieldsT[];
 }
 
 /**

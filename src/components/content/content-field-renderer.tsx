@@ -41,7 +41,7 @@ export function ContentFieldRenderer({
             alt={key}
             width={800}
             height={600}
-            className="w-full h-auto object-cover rounded-lg"
+            className="w-full h-full object-cover"
             priority={key.includes("hero") || key.includes("banner")}
           />
         </div>
