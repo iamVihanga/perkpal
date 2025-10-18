@@ -1,15 +1,18 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Metadata } from "next";
 import type { SearchParams } from "nuqs/server";
 
 import { loadSearchParams } from "@/lib/searchparams";
 import { PerksFilters } from "@/modules/layouts/components/perks-filters";
+import { PerksListSkeleton } from "@/modules/layouts/skelatons/perks-list-skelaton";
+import { PerksList } from "@/modules/layouts/components/perks-list";
 
 // ISR: Revalidate every 30 minutes for perks listing
 export const revalidate = 1800;
 
 type PageProps = {
   searchParams: Promise<SearchParams>;
+  params: Promise<{ category_slug: string }>;
 };
 
 export async function generateMetadata({
@@ -40,8 +43,14 @@ export async function generateMetadata({
   };
 }
 
-export default function PerksPage({ searchParams }: PageProps) {
-  console.log(searchParams);
+export default async function PerksPage({ searchParams, params }: PageProps) {
+  const { category_slug } = await params;
 
-  return <PerksFilters></PerksFilters>;
+  return (
+    <PerksFilters>
+      <Suspense fallback={<PerksListSkeleton />}>
+        <PerksList searchParams={searchParams} categorySlug={category_slug} />
+      </Suspense>
+    </PerksFilters>
+  );
 }
