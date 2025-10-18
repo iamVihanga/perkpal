@@ -1,6 +1,7 @@
 import {
   createSearchParamsCache,
   createSerializer,
+  createLoader,
   parseAsInteger,
   parseAsString
 } from "nuqs/server";
@@ -12,8 +13,18 @@ export const searchParams = {
   sort: parseAsString,
   update: parseAsString,
   category: parseAsString,
-  perk: parseAsString
+  perk: parseAsString,
+
+  // Perks-specific search params
+  search: parseAsString,
+  categoryId: parseAsString,
+  subcategoryId: parseAsString,
+  location: parseAsString,
+  status: parseAsString,
+  redemptionMethod: parseAsString
 };
 
 export const searchParamsCache = createSearchParamsCache(searchParams);
 export const serialize = createSerializer(searchParams);
+
+export const loadSearchParams = createLoader(searchParams);

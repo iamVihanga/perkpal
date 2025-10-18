@@ -28,8 +28,7 @@ export function Navbar({ className }: Props) {
               key={index}
               className={cn(
                 "text-amber-100 hover:text-amber-300 text-base tracking-wide transition-colors duration-100 ease-in-out font-palo font-light",
-                pathname === link.slug &&
-                  "underline text-amber-200 font-semibold"
+                pathname === link.slug && "text-amber-200 font-semibold"
               )}
             >
               {link.name}
