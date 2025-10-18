@@ -70,7 +70,7 @@ export function HeroSection({ data }: Props) {
         <div className="h-full flex flex-col justify-center items-center">
           <ContentFieldRenderer
             field={heroImage}
-            className="size-[420px] object-cover rounded-full overflow-hidden"
+            className="size-[450px] object-cover rounded-full overflow-hidden"
           />
         </div>
       )}
