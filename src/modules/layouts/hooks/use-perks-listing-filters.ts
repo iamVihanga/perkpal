@@ -38,17 +38,20 @@ export function usePerksListingFilters() {
 
   const [sort, setSort] = useQueryState(
     "sort",
-    searchParams.sort.withDefault("desc")
+    searchParams.sort.withDefault("")
   );
 
   const resetFilters = () => {
     setSearch("");
-    setSort("desc");
+    setSort("");
     setLocation("global");
   };
 
   const isAnyFilterActive =
-    search !== "" || location !== "global" || subcategoryId !== "";
+    search !== "" ||
+    location !== "global" ||
+    subcategoryId !== "" ||
+    sort !== "";
 
   return {
     search,
